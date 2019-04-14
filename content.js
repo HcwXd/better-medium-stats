@@ -9,12 +9,11 @@ const getTotal = (tableColumn) =>
     .map((e) => parseInt(e.getAttribute('title').replace(/,/g, ''), 10))
     .reduce((a, b) => a + b, 0);
 
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(sendResponse) {
   const stats = {
     views: getTotal(totalTypes.VIEWS),
     reads: getTotal(totalTypes.READS),
     fans: getTotal(totalTypes.FANS),
   };
-  console.log(stats);
   sendResponse({ stats });
 });

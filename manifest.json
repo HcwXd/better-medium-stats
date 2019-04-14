@@ -4,7 +4,9 @@
   "name": "Medium stats counter",
   "description": "This extension counts the total views/reads/fans of user's Medium stories",
   "version": "1.0",
-  "page_action": {
+
+  "browser_action": {
+    "default_title": "Medium stats counter",
     "default_icon": "icon.png",
     "default_popup": "popup.html"
   },
@@ -13,11 +15,12 @@
     "48": "icon.png",
     "128": "icon.png"
   },
-  "background": {
-    "scripts": ["event.js"],
-    "persistent": true
-  },
-  "permissions": ["activeTab", "https://ajax.googleapis.com/", "declarativeContent"],
+  "permissions": [
+    "activeTab",
+    "https://ajax.googleapis.com/",
+    "declarativeContent",
+    "https://medium.com/"
+  ],
   "content_scripts": [
     {
       "matches": ["*://medium.com/me/stats"],
