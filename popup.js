@@ -31,19 +31,48 @@ function getTotal(arr, type) {
 
 function render({ totalViews, totalReads, totalClaps, totalUpvotes, totalStories }) {
   document.querySelector('.loader').style.display = 'none';
-  const html = `<div class="label">         
-                      Total Views:<br>
-                      Total Reads:<br>                                         
-                      Total Fans:<br>
-                      Total Claps:<br>
-                      Total Stories:<br>
-                      </div>
-                      <div class="value">          
-                      ${totalViews.toLocaleString()}<br>
-                      ${totalReads.toLocaleString()}<br>
-                      ${totalClaps.toLocaleString()}<br>
-                      ${totalUpvotes.toLocaleString()}<br>
-                      ${totalStories.toLocaleString()}<br>
-                      </div>`;
+  const html = `
+  <table>
+      <thead>
+        <tr>
+          <th>Types</th>
+          <th>Views</th>
+          <th>Reads</th>
+          <th>Fans</th>
+          <th>Claps</th>
+        </tr>
+      <thead>
+      <tbody>
+        <tr>
+          <td>Total</td>
+          <td>${totalViews.toLocaleString()}</td>
+          <td>${totalReads.toLocaleString()}</td>
+          <td>${totalClaps.toLocaleString()}</td>
+          <td>${totalUpvotes.toLocaleString()}</td>
+        </tr>
+        <tr>
+          <td>Average</td>
+          <td>${Math.floor(totalViews / totalStories).toLocaleString()}</td>
+          <td>${Math.floor(totalReads / totalStories).toLocaleString()}</td>
+          <td>${Math.floor(totalClaps / totalStories).toLocaleString()}</td>
+          <td>${Math.floor(totalUpvotes / totalStories).toLocaleString()}</td>
+        </tr>
+      </tbody>
+    <table/>
+  `;
+  // const html = `<div class="label">
+  //                     Total Views:<br>
+  //                     Total Reads:<br>
+  //                     Total Fans:<br>
+  //                     Total Claps:<br>
+  //                     Total Stories:<br>
+  //                     </div>
+  //                     <div class="value">
+  //                     ${totalViews.toLocaleString()}<br>
+  //                     ${totalReads.toLocaleString()}<br>
+  //                     ${totalClaps.toLocaleString()}<br>
+  //                     ${totalUpvotes.toLocaleString()}<br>
+  //                     ${totalStories.toLocaleString()}<br>
+  //                     </div>`;
   document.querySelector('.container').innerHTML = html;
 }

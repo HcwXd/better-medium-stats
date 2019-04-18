@@ -1,0 +1,87 @@
+body {
+  margin: 0px;
+  padding: 0px;
+  white-space: nowrap;
+  transition-duration: 1s; }
+
+.title_wrap {
+  padding: 25px 25px 5px 25px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 6px;
+  color: black; }
+  .title_wrap .title {
+    font-size: 18px;
+    font-family: "Cutive Mono", monospace; }
+
+table {
+  border-spacing: 1;
+  border-collapse: collapse;
+  border-radius: 6px;
+  text-align: right;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); }
+  table td, table th {
+    padding: 16px; }
+  table thead tr {
+    padding: 16px;
+    background: #6eb799;
+    font-size: 16px; }
+  table tbody tr {
+    border-bottom: 1px solid #e3f1d5; }
+  table thead tr th:nth-child(1), table tbody tr td:nth-child(1) {
+    text-align: left;
+    border-right: 1px solid #e3f1d5; }
+
+.container {
+  padding: 25px;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  transition-duration: 1s;
+  font-family: "Cutive Mono", monospace; }
+
+.footer {
+  padding: 10px 25px 10px 25px;
+  border-top: 1px solid #a9a9b3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center; }
+  .footer .link_wrap a {
+    margin-right: 16px; }
+    .footer .link_wrap a:last-child {
+      margin-right: 0px; }
+  .footer .version {
+    color: #a9a9b3; }
+
+.loader {
+  top: 40px;
+  left: -2.5px; }
+  .loader span {
+    display: inline-block;
+    width: 5px;
+    height: 20px;
+    background-color: #6eb799; }
+    .loader span:nth-child(1) {
+      animation: grow 1s ease-in-out infinite; }
+    .loader span:nth-child(2) {
+      animation: grow 1s ease-in-out 0.15s infinite; }
+    .loader span:nth-child(3) {
+      animation: grow 1s ease-in-out 0.3s infinite; }
+    .loader span:nth-child(4) {
+      animation: grow 1s ease-in-out 0.45s infinite; }
+
+@keyframes grow {
+  0%,
+100% {
+    -webkit-transform: scaleY(1);
+    -ms-transform: scaleY(1);
+    -o-transform: scaleY(1);
+    transform: scaleY(1); }
+  50% {
+    -webkit-transform: scaleY(1.8);
+    -ms-transform: scaleY(1.8);
+    -o-transform: scaleY(1.8);
+    transform: scaleY(1.8); } }
+
+/*# sourceMappingURL=style.css.map */
