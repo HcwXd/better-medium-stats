@@ -38,8 +38,8 @@ function render({ totalViews, totalReads, totalClaps, totalUpvotes, totalStories
           <th>Types</th>
           <th>Views</th>
           <th>Reads</th>
-          <th>Fans</th>
           <th>Claps</th>
+          <th>Fans</th>
         </tr>
       <thead>
       <tbody>
@@ -60,19 +60,6 @@ function render({ totalViews, totalReads, totalClaps, totalUpvotes, totalStories
       </tbody>
     <table/>
   `;
-  // const html = `<div class="label">
-  //                     Total Views:<br>
-  //                     Total Reads:<br>
-  //                     Total Fans:<br>
-  //                     Total Claps:<br>
-  //                     Total Stories:<br>
-  //                     </div>
-  //                     <div class="value">
-  //                     ${totalViews.toLocaleString()}<br>
-  //                     ${totalReads.toLocaleString()}<br>
-  //                     ${totalClaps.toLocaleString()}<br>
-  //                     ${totalUpvotes.toLocaleString()}<br>
-  //                     ${totalStories.toLocaleString()}<br>
-  //                     </div>`;
+
   document.querySelector('.container').innerHTML = html;
 }
