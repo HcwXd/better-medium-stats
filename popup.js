@@ -29,6 +29,88 @@ function getTotal(arr, type) {
   }, 0);
 }
 
+let total = 0;
+let totalNoti = 0;
+let followTrend = {};
+const nowDate = new Date();
+
+fetchNoti();
+
+function fetchNoti() {
+  fetch('https://medium.com/_/api/activity?limit=10000')
+    .then(function(response) {
+      return response.text();
+    })
+    .then(function(textRes) {
+      let JsonRes = textRes.split('</x>')[1];
+      let data = JSON.parse(JsonRes);
+      let { value: notiRawData, paging } = data.payload;
+      notiRawData.forEach((el) => {
+        totalNoti++;
+        if (el.activityType === 'users_following_you') {
+          countAndLog(el);
+        } else if (el.activityType === 'users_following_you_rollup') {
+          el.rollupItems.forEach((ell) => {
+            countAndLog(ell);
+          });
+        }
+      });
+      if (paging) {
+        fetchNextNoti(paging.next);
+      } else {
+        console.log('TOTAL:', total);
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
+}
+
+function fetchNextNoti({ to }) {
+  fetch(`https://medium.com/_/api/activity?limit=${10000}&to=${to}`)
+    .then(function(response) {
+      return response.text();
+    })
+    .then(function(textRes) {
+      let JsonRes = textRes.split('</x>')[1];
+      let data = JSON.parse(JsonRes);
+      let { value: notiRawData, paging } = data.payload;
+      notiRawData.forEach((el) => {
+        totalNoti++;
+        if (el.activityType === 'users_following_you') {
+          countAndLog(el);
+        } else if (el.activityType === 'users_following_you_rollup') {
+          el.rollupItems.forEach((ell) => {
+            countAndLog(ell);
+          });
+        }
+      });
+      if (paging && paging.next) {
+        fetchNextNoti(paging.next);
+      } else {
+        console.log('total:', total);
+        console.log('totalNoti:', totalNoti);
+        console.log(followTrend);
+        renderFollowTrend();
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
+}
+function renderFollowTrend() {}
+
+function countAndLog(obj) {
+  let date = new Date(obj.occurredAt);
+  let key = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
+  if (followTrend[key]) {
+    followTrend[key]++;
+  } else {
+    followTrend[key] = 1;
+  }
+  total++;
+}
+
 function render({ totalViews, totalReads, totalClaps, totalUpvotes, totalStories }) {
   document.querySelector('.loader').style.display = 'none';
   const html = `
@@ -60,19 +142,5 @@ function render({ totalViews, totalReads, totalClaps, totalUpvotes, totalStories
       </tbody>
     <table/>
   `;
-  // const html = `<div class="label">
-  //                     Total Views:<br>
-  //                     Total Reads:<br>
-  //                     Total Fans:<br>
-  //                     Total Claps:<br>
-  //                     Total Stories:<br>
-  //                     </div>
-  //                     <div class="value">
-  //                     ${totalViews.toLocaleString()}<br>
-  //                     ${totalReads.toLocaleString()}<br>
-  //                     ${totalClaps.toLocaleString()}<br>
-  //                     ${totalUpvotes.toLocaleString()}<br>
-  //                     ${totalStories.toLocaleString()}<br>
-  //                     </div>`;
   document.querySelector('.container').innerHTML = html;
 }
