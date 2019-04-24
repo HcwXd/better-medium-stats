@@ -120,7 +120,35 @@ function fetchNextNoti({ to }) {
       console.log(err);
     });
 }
-function renderFollowTrend() {}
+function renderFollowTrend() {
+  const ctx = document.getElementById('myChart').getContext('2d');
+
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: Object.keys(followTrend).map(
+        (key) => `${Math.floor((key % 10000) / 100)}/${key % 100}`
+      ),
+      datasets: [
+        {
+          // label: 'My First dataset',
+          // backgroundColor: 'rgb(255, 99, 132)',
+          // borderColor: 'rgb(255, 99, 132)',
+          data: [...Object.keys(followTrend).map((key) => followTrend[key])],
+        },
+      ],
+    },
+
+    // Configuration options go here
+    options: {
+      elements: {
+        line: {
+          tension: 0, // disables bezier curves
+        },
+      },
+    },
+  });
+}
 
 function countAndLog(obj) {
   let date = new Date(obj.occurredAt);
