@@ -58,6 +58,7 @@ function renderStoryData({ totalViews, totalReads, totalClaps, totalUpvotes, tot
       </tbody>
     <table/>
   `;
+
   document.querySelector('.container').innerHTML = html;
 }
 
