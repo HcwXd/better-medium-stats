@@ -9,20 +9,29 @@
     <title>Medium Stats Counter</title>
     <link href="https://fonts.googleapis.com/css?family=Cutive+Mono" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
-    <script src="popup.js"></script>
   </head>
   <body>
     <div class="title_wrap">
       <div class="title">Medium Stats Counter</div>
     </div>
-    <div class="container">
-      <div class="loader">
+    <div id="table_container" class="container">
+      <div id="table_loader" class="loader">
         <span></span>
         <span></span>
         <span></span>
         <span></span>
       </div>
     </div>
+    <div id="line_container" class="container">
+      <div id="line_loader" class="loader">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+    <canvas id="myChart"></canvas>
+
     <div class="footer">
       <div class="link_wrap">
         <a
@@ -68,7 +77,13 @@
             ></path></svg
         ></a>
       </div>
+<<<<<<< HEAD
       <div class="version">v1.3.1</div>
+=======
+      <div class="version">v1.4.0</div>
+>>>>>>> feature/parse-notification
     </div>
   </body>
+  <script src="dist/chart.js"></script>
+  <script src="popup.js"></script>
 </html>
