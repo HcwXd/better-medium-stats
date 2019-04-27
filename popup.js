@@ -3,10 +3,10 @@ fetch('https://medium.com/me/stats?format=json&limit=100000')
     return response.text();
   })
   .then(function(textRes) {
-    let data = JSON.parse(textRes.split('</x>')[1]);
-    let storyRawData = data.payload.value;
-    let totalStories = storyRawData.length;
-    let storyData = {
+    const data = JSON.parse(textRes.split('</x>')[1]);
+    const storyRawData = data.payload.value;
+    const totalStories = storyRawData.length;
+    const storyData = {
       totalViews: getTotal(storyRawData, 'views'),
       totalReads: getTotal(storyRawData, 'reads'),
       totalClaps: getTotal(storyRawData, 'claps'),
@@ -15,11 +15,10 @@ fetch('https://medium.com/me/stats?format=json&limit=100000')
     };
     renderStoryData(storyData);
   })
-  .catch(function() {
-    document.querySelector('.loader').style.display = 'none';
-    document.querySelector(
-      '.container'
-    ).innerHTML = `<div class="label">Please log in to your Medium account :)<div>`;
+  .catch(function(err) {
+    const errorMsg = `<div class="label">Please log in to your Medium account :)<div>`;
+    document.querySelector('#table_container').innerHTML = errorMsg;
+    console.error(err);
   });
 
 function getTotal(arr, type) {
@@ -29,7 +28,7 @@ function getTotal(arr, type) {
 }
 
 function renderStoryData({ totalViews, totalReads, totalClaps, totalUpvotes, totalStories }) {
-  document.querySelector('.loader').style.display = 'none';
+  document.querySelector('#table_loader').style.display = 'none';
   const html = `
   <table>
       <thead>
@@ -62,10 +61,7 @@ function renderStoryData({ totalViews, totalReads, totalClaps, totalUpvotes, tot
   document.querySelector('.container').innerHTML = html;
 }
 
-let total = 0;
-let totalNoti = 0;
-let followTrend = createLast30DaysObject();
-const nowDate = new Date();
+let last30DaysStats = createLast30DaysObject();
 
 fetchNextNoti({ to: -1 });
 
@@ -77,84 +73,117 @@ function createLast30DaysObject() {
   const date = today.getDate();
   for (let i = 0; i <= 30; i++) {
     const day = new Date(year, month - 1, date + i);
-    let key = day.getFullYear() * 10000 + (day.getMonth() + 1) * 100 + day.getDate();
+    const key = day.getFullYear() * 10000 + (day.getMonth() + 1) * 100 + day.getDate();
 
-    obj[key] = 0;
+    obj[key] = {
+      follow: { count: 0, followers: [] },
+      highlight: { count: 0, posts: [] },
+      clap: { count: 0, posts: [] },
+    };
   }
   return obj;
 }
 
 function fetchNextNoti({ to }) {
-  let fetchUrl =
+  const fetchUrl =
     to === -1
       ? 'https://medium.com/_/api/activity?limit=10000'
       : `https://medium.com/_/api/activity?limit=${10000}&to=${to}`;
+
+  const isRollup = (type) => type.slice(type.length - 6, type.length) === 'rollup';
 
   fetch(fetchUrl)
     .then(function(response) {
       return response.text();
     })
     .then(function(textRes) {
-      let data = JSON.parse(textRes.split('</x>')[1]);
-      let { value: notiRawData, paging } = data.payload;
-      notiRawData.forEach((el) => {
-        totalNoti++;
-        if (el.activityType === 'users_following_you') {
-          countAndLog(el);
-        } else if (el.activityType === 'users_following_you_rollup') {
-          el.rollupItems.forEach((ell) => {
-            countAndLog(ell);
-          });
+      const data = JSON.parse(textRes.split('</x>')[1]);
+      const { value: notiRawData, paging } = data.payload;
+
+      notiRawData.forEach((notiItem) => {
+        if (isRollup(notiItem.activityType)) {
+          notiItem.rollupItems.forEach((noti) => countSingleNoti(noti));
+        } else {
+          countSingleNoti(notiItem);
         }
       });
+
       if (paging && paging.next) {
         fetchNextNoti(paging.next);
       } else {
-        console.log('total:', total);
-        console.log('totalNoti:', totalNoti);
-        console.log(followTrend);
-        renderFollowTrend();
+        render30DaysStats();
       }
     })
     .catch(function(err) {
-      console.log(err);
+      document.querySelector('#line_loader').style.display = 'none';
+      console.error(err);
     });
 }
-function renderFollowTrend() {
-  const ctx = document.getElementById('myChart').getContext('2d');
 
+const eventType = {
+  follow: 'users_following_you',
+  highlight: 'quote',
+  clap: 'post_recommended',
+};
+
+function countSingleNoti(noti) {
+  let date = new Date(noti.occurredAt);
+  let key = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
+  if (last30DaysStats[key] !== undefined) {
+    if (noti.activityType === eventType.follow) {
+      last30DaysStats[key].follow.count++;
+      last30DaysStats[key].follow.followers.push(noti.actorId);
+    } else if (noti.activityType === eventType.clap) {
+      last30DaysStats[key].clap.count++;
+      last30DaysStats[key].clap.posts.push(noti.postId);
+    } else if (noti.activityType === eventType.highlight) {
+      last30DaysStats[key].highlight.count++;
+      last30DaysStats[key].highlight.posts.push(noti.postId);
+    }
+  } else {
+    console.log(key);
+  }
+}
+
+function render30DaysStats() {
+  console.log(last30DaysStats);
+  const ctx = document.getElementById('myChart').getContext('2d');
+  document.querySelector('#line_loader').style.display = 'none';
   const chart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: Object.keys(followTrend).map(
+      labels: Object.keys(last30DaysStats).map(
         (key) => `${Math.floor((key % 10000) / 100)}/${key % 100}`
       ),
       datasets: [
         {
-          // label: 'My First dataset',
-          // backgroundColor: 'rgb(255, 99, 132)',
-          // borderColor: 'rgb(255, 99, 132)',
-          data: [...Object.keys(followTrend).map((key) => followTrend[key])],
+          label: 'Daily followers',
+          borderColor: '#6eb799',
+          data: [...Object.keys(last30DaysStats).map((key) => last30DaysStats[key].follow.count)],
+        },
+        {
+          label: 'Daily claps',
+          borderColor: '#b7746e',
+          data: [...Object.keys(last30DaysStats).map((key) => last30DaysStats[key].clap.count)],
+        },
+        {
+          label: 'Daily highlights',
+          borderColor: '#b76eb1',
+          data: [
+            ...Object.keys(last30DaysStats).map((key) => last30DaysStats[key].highlight.count),
+          ],
         },
       ],
     },
 
-    // Configuration options go here
     options: {
       elements: {
         line: {
-          tension: 0, // disables bezier curves
+          backgroundColor: 'rgba(0,0,0,0)',
+          pointBackgroundColor: 'rgba(0,0,0,0)',
+          tension: 0,
         },
       },
     },
   });
-}
-
-function countAndLog(obj) {
-  let date = new Date(obj.occurredAt);
-  let key = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
-  if (followTrend[key] !== undefined) {
-    followTrend[key]++;
-  }
-  total++;
 }
