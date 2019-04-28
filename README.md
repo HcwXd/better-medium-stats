@@ -15,3 +15,4 @@ Any suggestion, issue and PR is highly appreciated. Hope you enjoy it!
 ## Third Party
 
 - [Feather Open Source Icons](https://github.com/feathericons/feather)
+- [Chart.js](https://www.chartjs.org/)
