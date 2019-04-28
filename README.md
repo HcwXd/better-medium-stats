@@ -1,6 +1,8 @@
 # Medium Stats Counter
 
-![Screenshot](https://lh3.googleusercontent.com/EJF3YCWO7_JJMP85KO0Y6FZu8TKjJa7SfozQhydv3agbPauiV34FbeAQuldI_KVZEKc7BcXDwQ=w640-h400-e365)
+Get it at [Chrome Web Store](https://chrome.google.com/webstore/detail/medium-stats-counter/pdehepohihkkmeclfnlnipieffkomajc).
+
+![Screenshot](https://lh3.googleusercontent.com/tW6cRuj_Ci4DaieXmBa4kQ0uR54mGoz4zuXHC5DKfj57MGlrSU6ND02aYbxZiMCRTomgheoTvg=w640-h400-e365)
 
 
 
@@ -16,3 +18,4 @@ Any suggestion, issue and PR is highly appreciated. Hope you enjoy it!
 
 - [Feather Open Source Icons](https://github.com/feathericons/feather)
 - [Chart.js](https://www.chartjs.org/)
+
