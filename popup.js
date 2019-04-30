@@ -73,7 +73,7 @@ function createLast30DaysObject() {
   const month = today.getMonth();
   const date = today.getDate();
   for (let i = 0; i <= 30; i++) {
-    const day = new Date(year, month - 1, date + i);
+    const day = new Date(year, month, date - 30 + i);
     const key = day.getFullYear() * 10000 + (day.getMonth() + 1) * 100 + day.getDate();
 
     obj[key] = {
@@ -126,7 +126,7 @@ const eventType = {
   highlight: 'quote',
   clap: 'post_recommended',
 };
-
+let lastNotiNotTrack;
 function countSingleNoti(noti) {
   let date = new Date(noti.occurredAt);
   let key = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
@@ -142,12 +142,13 @@ function countSingleNoti(noti) {
       last30DaysStats[key].highlight.posts.push(noti.postId);
     }
   } else {
-    console.log(key);
+    lastNotiNotTrack = key;
   }
 }
 
 function render30DaysStats() {
-  console.log(last30DaysStats);
+  // console.log(last30DaysStats);
+  console.log(lastNotiNotTrack);
   const ctx = document.getElementById('myChart').getContext('2d');
   document.querySelector('#line_loader').style.display = 'none';
   const chart = new Chart(ctx, {
@@ -187,4 +188,41 @@ function render30DaysStats() {
       },
     },
   });
+}
+let hour = [];
+let hourSum = [...Array(24)].fill(0);
+let daySum = [...Array(7)].fill(0);
+
+const today = new Date();
+
+fetchStoriesHourStats();
+function fetchStoriesHourStats(now = new Date()) {
+  if (now < new Date(today.getFullYear() - 1, today.getMonth() - 1, today.getDate())) return;
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const date = now.getDate();
+  const then = new Date(year, month - 1, date);
+  const fetchUrl = `https://medium.com/me/stats/total/${then.getTime()}/${now.getTime()}`;
+
+  fetch(fetchUrl)
+    .then(function(response) {
+      return response.text();
+    })
+    .then(function(textRes) {
+      const data = JSON.parse(textRes.split('</x>')[1]);
+      const { value: notiRawData } = data.payload;
+      console.log(now);
+      console.log(notiRawData.length);
+
+      notiRawData.forEach((notiItem) => {
+        let timeStamp = new Date(notiItem.timestampMs);
+        hour.push([timeStamp, notiItem.views]);
+        hourSum[timeStamp.getHours()] += notiItem.views;
+        daySum[timeStamp.getDay()] += notiItem.views;
+      });
+      fetchStoriesHourStats(then);
+    })
+    .catch(function(err) {
+      console.error(err);
+    });
 }
