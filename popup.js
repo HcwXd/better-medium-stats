@@ -149,8 +149,8 @@ function countSingleNoti(noti) {
 function render30DaysStats() {
   // console.log(last30DaysStats);
   console.log(lastNotiNotTrack);
-  const ctx = document.getElementById('myChart').getContext('2d');
-  document.querySelector('#line_loader').style.display = 'none';
+  const ctx = document.getElementById('notiChart').getContext('2d');
+  document.querySelector('#noti_loader').style.display = 'none';
   const chart = new Chart(ctx, {
     type: 'line',
     data: {
@@ -197,7 +197,10 @@ const today = new Date();
 
 fetchStoriesHourStats();
 function fetchStoriesHourStats(now = new Date()) {
-  if (now < new Date(today.getFullYear() - 1, today.getMonth() - 1, today.getDate())) return;
+  if (now < new Date(today.getFullYear() - 1, today.getMonth() - 1, today.getDate())) {
+    renderHourStats();
+    return;
+  }
   const year = now.getFullYear();
   const month = now.getMonth();
   const date = now.getDate();
@@ -225,4 +228,70 @@ function fetchStoriesHourStats(now = new Date()) {
     .catch(function(err) {
       console.error(err);
     });
+}
+
+function renderHourStats() {
+  console.log(lastNotiNotTrack);
+  const ctx = document.getElementById('hourStatsChart').getContext('2d');
+  document.querySelector('#hourStats_loader').style.display = 'none';
+  // renderDayStats(ctx);
+  renderHourlyStats(ctx);
+}
+
+function renderHourlyStats(ctx) {
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: [...Array(23)].map((_, idx) => `${idx}:00`),
+      datasets: [
+        {
+          label: 'Avg Views',
+          borderColor: '#6eb799',
+          backgroundColor: '#6eb799',
+          data: hourSum.map((el) => Math.floor(el / 365)),
+        },
+      ],
+    },
+
+    options: {
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true,
+            },
+          },
+        ],
+      },
+    },
+  });
+}
+
+function renderDayStats(ctx) {
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      datasets: [
+        {
+          label: 'Avg Views',
+          borderColor: '#6eb799',
+          backgroundColor: '#6eb799',
+          data: daySum.map((el) => Math.floor(el / 52)),
+        },
+      ],
+    },
+
+    options: {
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true,
+            },
+          },
+        ],
+      },
+    },
+  });
 }
