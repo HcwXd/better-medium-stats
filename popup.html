@@ -14,7 +14,7 @@
     <div class="title_wrap">
       <div class="title">Medium Stats Counter</div>
     </div>
-    <div id="table_container" class="container">
+    <!-- <div id="table_container" class="container">
       <div id="table_loader" class="loader">
         <span></span>
         <span></span>
@@ -30,16 +30,29 @@
         <span></span>
       </div>
     </div>
-    <canvas id="notiChart"></canvas>
+    <canvas id="notiChart"></canvas> -->
     <div id="line_container" class="container">
+      <div class="time_format_btn_wrap">
+        <div data-timeFormat="year" class="time_format_btn">Year</div>
+        <div data-timeFormat="month" class="time_format_btn">Month</div>
+        <div data-timeFormat="week" class="time_format_btn">Week</div>
+        <div data-timeFormat="day" class="time_format_btn time_format_btn-select">
+          Day
+        </div>
+        <div data-timeFormat="hour" class="time_format_btn hour_format_btn">Hour</div>
+      </div>
       <div id="hourStats_loader" class="loader">
         <span></span>
         <span></span>
         <span></span>
         <span></span>
       </div>
+      <canvas id="hourStatsChart"></canvas>
+      <div class="change_time_btn_wrap">
+        <div class="change_time_btn backward_time_btn" data-direction="1"><<</div>
+        <div class="change_time_btn forward_time_btn" data-direction="-1">>></div>
+      </div>
     </div>
-    <canvas id="hourStatsChart"></canvas>
 
     <div class="footer">
       <div class="link_wrap">

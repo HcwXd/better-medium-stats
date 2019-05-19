@@ -1,3 +1,8 @@
+*
+  // border: 1px solid black
+  box-sizing: border-box
+$medium-green: #6eb799
+$hover-grey: rgb(246, 246, 246)
 body
   margin: 0px
   padding: 0px
@@ -35,12 +40,75 @@ table
 .container
   padding: 25px
   align-items: center
-  display: flex
   justify-content: space-around
+  display: flex
+  flex-direction: column
   font-size: 16px
   transition-duration: 1s
   font-family: 'Cutive Mono', monospace
-
+  .loader
+    span
+      display: inline-block
+      width: 5px
+      height: 20px
+      background-color: rgb(110, 183, 153)
+      &:nth-child(1)
+        animation: grow 1s ease-in-out infinite
+      &:nth-child(2)
+        animation: grow 1s ease-in-out 0.15s infinite
+      &:nth-child(3)
+        animation: grow 1s ease-in-out 0.3s infinite
+      &:nth-child(4)
+        animation: grow 1s ease-in-out 0.45s infinite
+  #hourStatsChart
+    display: none
+    width: 500px
+  .time_format_btn_wrap
+    margin-bottom: 15px
+    display: flex
+    .time_format_btn
+      padding: 10px
+      border: 1px solid rgba(#000, 0.3)
+      border-right: none
+      color: rgba(#000, 0.7)
+      cursor: pointer
+      &:first-child
+        border-top-left-radius: 4px
+        border-bottom-left-radius: 4px
+      &:last-child
+        border-top-right-radius: 4px
+        border-bottom-right-radius: 4px
+        border-right: 1px solid rgba(#000, 0.3)
+      &:hover
+        background-color: $hover-grey
+    .time_format_btn-select
+      background-color: $medium-green
+      border-color: $medium-green
+      color: white
+      cursor: default
+      &:hover
+        background-color: $medium-green
+  .change_time_btn_wrap
+    margin-top: 15px
+    display: flex
+    .change_time_btn
+      padding: 10px
+      border: 1px solid rgba(#000, 0.3)
+      color: rgba(#000, 0.7)
+      cursor: pointer
+      border-right: none
+      &:first-child
+        border-top-left-radius: 4px
+        border-bottom-left-radius: 4px
+      &:last-child
+        border-top-right-radius: 4px
+        border-bottom-right-radius: 4px
+        border-right: 1px solid rgba(#000, 0.3)
+      &:hover
+        background-color: $hover-grey
+    .change_time_btn-prohibit
+      opacity: 0.7
+      cursor: default
 .footer
   padding: 10px 25px 10px 25px
   border-top: 1px solid rgb(169, 169, 179)
@@ -54,22 +122,6 @@ table
   .version
     color: rgb(169, 169, 179)
 
-.loader
-  top: 40px
-  left: -2.5px
-  span
-    display: inline-block
-    width: 5px
-    height: 20px
-    background-color: rgb(110, 183, 153)
-    &:nth-child(1)
-      animation: grow 1s ease-in-out infinite
-    &:nth-child(2)
-      animation: grow 1s ease-in-out 0.15s infinite
-    &:nth-child(3)
-      animation: grow 1s ease-in-out 0.3s infinite
-    &:nth-child(4)
-      animation: grow 1s ease-in-out 0.45s infinite
 
 @keyframes grow
   0%,
