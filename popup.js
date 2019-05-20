@@ -223,7 +223,7 @@ function renderBarChart(labels, data, timeStamp) {
   if (chart) {
     chart.data.datasets[0].data = data;
     chart.data.labels = labels;
-    chart.options.title.text = getDetailedDateLabelFromEpoch(timeStamp);
+    chart.options.title.text = timeStamp.getFullYear();
     chart.update();
     return;
   }
@@ -246,8 +246,8 @@ function renderBarChart(labels, data, timeStamp) {
         display: false,
       },
       title: {
-        display: false,
-        text: getDetailedDateLabelFromEpoch(timeStamp),
+        display: true,
+        text: timeStamp.getFullYear(),
         position: 'bottom',
       },
       tooltips: {
