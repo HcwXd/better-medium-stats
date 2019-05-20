@@ -65,6 +65,7 @@ backwardTimeBtn.addEventListener('click', backwardTimeHandler);
 
 function forwardTimeHandler() {
   console.log(+this.dataset.direction);
+  if (this.classList.contains('change_time_btn-prohibit')) return;
 
   if (timeFormatState === 'hour') {
     fromTimeState -= 24;
@@ -81,11 +82,15 @@ function forwardTimeHandler() {
     fromTimeState = 0;
     forwardTimeBtn.classList.add('change_time_btn-prohibit');
   }
+  if (hourView[fromTimeState] !== undefined) {
+    backwardTimeBtn.classList.remove('change_time_btn-prohibit');
+  }
   renderHandler[timeFormatState](hourView[fromTimeState][0], fromTimeState);
 }
 
 function backwardTimeHandler() {
   console.log(+this.dataset.direction);
+  if (this.classList.contains('change_time_btn-prohibit')) return;
 
   if (timeFormatState === 'hour') {
     fromTimeState += 24;
@@ -98,8 +103,11 @@ function backwardTimeHandler() {
   } else if (timeFormatState === 'year') {
     fromTimeState += 24 * 30 * 12;
   }
-  if (fromTimeState >= 0) {
+  if (fromTimeState > 0) {
     forwardTimeBtn.classList.remove('change_time_btn-prohibit');
+  }
+  if (hourView[fromTimeState] === undefined) {
+    backwardTimeBtn.classList.add('change_time_btn-prohibit');
   }
   renderHandler[timeFormatState](hourView[fromTimeState][0], fromTimeState);
 }

@@ -106,6 +106,8 @@ table {
     .container .change_time_btn_wrap .change_time_btn-prohibit {
       opacity: 0.7;
       cursor: default; }
+      .container .change_time_btn_wrap .change_time_btn-prohibit:hover {
+        background-color: white; }
 
 .footer {
   padding: 10px 25px 10px 25px;
