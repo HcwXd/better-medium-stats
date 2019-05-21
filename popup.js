@@ -5,28 +5,13 @@ const NOW = {
   month: new Date().getMonth(),
   date: new Date().getDate(),
 };
-function addHours(timeStamp, hours) {
-  let result = new Date(timeStamp);
-  result.setHours(result.getHours() + hours);
-  return result;
-}
 
-function addDays(timeStamp, days) {
-  let result = new Date(timeStamp);
-  result.setDate(result.getDate() + days);
+Date.prototype.addTime = function(timeType, timeOffset) {
+  console.log(this);
+  let result = new Date(this);
+  result[`set${timeType}`](result[`get${timeType}`]() + timeOffset);
   return result;
-}
-
-function addMonths(timeStamp, months) {
-  let result = new Date(timeStamp);
-  result.setMonth(result.getMonth() + months);
-  return result;
-}
-function addYears(timeStamp, years) {
-  let result = new Date(timeStamp);
-  result.setFullYear(result.getFullYear() + years);
-  return result;
-}
+};
 
 const numOfMonthFetched = 36;
 
@@ -108,6 +93,7 @@ function backwardTimeHandler() {
   }
   if (hourView[fromTimeState] === undefined) {
     backwardTimeBtn.classList.add('change_time_btn-prohibit');
+    return;
   }
   renderHandler[timeFormatState](hourView[fromTimeState][0], fromTimeState);
 }
@@ -118,12 +104,15 @@ const renderHandler = {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24; idx++) {
-      if (hourView[hourIdx + idx] === undefined) break;
+      if (hourView[hourIdx + idx] === undefined) {
+        backwardTimeBtn.classList.add('change_time_btn-prohibit');
+        break;
+      }
       let [timeStamp, views] = hourView[hourIdx + idx];
       let label =
         `${timeStamp.getHours()}:00` +
         ` - ` +
-        `${addHours(timeStamp, 1).getHours()}:00` +
+        `${timeStamp.addTime('Hours', 1).getHours()}:00` +
         ` (${timeStamp.getMonth() + 1}/${timeStamp.getDate()})`;
       labels.push(label);
       data.push(views);
@@ -136,13 +125,18 @@ const renderHandler = {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24 * 7; idx++) {
-      if (hourView[hourIdx + idx] === undefined) break;
+      if (hourView[hourIdx + idx] === undefined) {
+        backwardTimeBtn.classList.add('change_time_btn-prohibit');
+        break;
+      }
       let [timeStamp, views] = hourView[hourIdx + idx];
       if (idx % 24 === 0) {
         let label =
           `${timeStamp.getMonth() + 1}/${timeStamp.getDate()}` +
           ` - ` +
-          `${addDays(timeStamp, 1).getMonth() + 1}/${addDays(timeStamp, 1).getDate()}`;
+          `${timeStamp.addTime('Date', 1).getMonth() + 1}/${timeStamp
+            .addTime('Date', 1)
+            .getDate()}`;
 
         labels.push(label);
         data.push(0);
@@ -157,13 +151,18 @@ const renderHandler = {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24 * 7 * 8; idx++) {
-      if (hourView[hourIdx + idx] === undefined) break;
+      if (hourView[hourIdx + idx] === undefined) {
+        backwardTimeBtn.classList.add('change_time_btn-prohibit');
+        break;
+      }
       let [timeStamp, views] = hourView[hourIdx + idx];
       if (idx % (24 * 7) === 0) {
         let label =
           `${timeStamp.getMonth() + 1}/${timeStamp.getDate()}` +
           ` - ` +
-          `${addDays(timeStamp, 7).getMonth() + 1}/${addDays(timeStamp, 7).getDate()}`;
+          `${timeStamp.addTime('Date', 7).getMonth() + 1}/${timeStamp
+            .addTime('Date', 7)
+            .getDate()}`;
         labels.push(label);
         data.push(0);
       }
@@ -177,13 +176,18 @@ const renderHandler = {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24 * 30 * 6; idx++) {
-      if (hourView[hourIdx + idx] === undefined) break;
+      if (hourView[hourIdx + idx] === undefined) {
+        backwardTimeBtn.classList.add('change_time_btn-prohibit');
+        break;
+      }
       let [timeStamp, views] = hourView[hourIdx + idx];
       if (idx % (24 * 30) === 0) {
         let label =
           `${timeStamp.getMonth() + 1}/${timeStamp.getDate()}` +
           ` - ` +
-          `${addMonths(timeStamp, 1).getMonth() + 1}/${addMonths(timeStamp, 1).getDate()}`;
+          `${timeStamp.addTime('Month', 1).getMonth() + 1}/${timeStamp
+            .addTime('Month', 1)
+            .getDate()}`;
         labels.push(label);
         data.push(0);
       }
@@ -197,13 +201,18 @@ const renderHandler = {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24 * 30 * 12 * 6; idx++) {
-      if (hourView[hourIdx + idx] === undefined) break;
+      if (hourView[hourIdx + idx] === undefined) {
+        backwardTimeBtn.classList.add('change_time_btn-prohibit');
+        break;
+      }
       let [timeStamp, views] = hourView[hourIdx + idx];
       if (idx % (24 * 30 * 12) === 0) {
         let label =
           `${timeStamp.getFullYear()}/${timeStamp.getMonth()}` +
           ` - ` +
-          `${addYears(timeStamp, 1).getFullYear()}/${addYears(timeStamp, 1).getMonth()}`;
+          `${timeStamp.addTime('FullYear', 1).getFullYear()}/${timeStamp
+            .addTime('FullYear', 1)
+            .getMonth()}`;
         labels.push(label);
         data.push(0);
       }
