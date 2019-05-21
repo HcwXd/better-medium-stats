@@ -172,3 +172,103 @@
 //     });
 //   }
 // }
+
+// function renderHourStats() {
+//   const ctx = document.getElementById('hourStatsChart').getContext('2d');
+//   document.querySelector('#hourStats_loader').style.display = 'none';
+//   // renderDayStats(ctx);
+//   renderHourlyStats(ctx);
+//   // renderDateStats(ctx);
+// }
+
+// function renderHourlyStats(ctx) {
+//   const chart = new Chart(ctx, {
+//     type: 'bar',
+//     data: {
+//       labels: [...Array(23)].map((_, idx) => `${idx}:00`),
+//       datasets: [
+//         {
+//           label: 'Avg Views',
+//           borderColor: '#6eb799',
+//           backgroundColor: '#6eb799',
+//           data: sumByHour.map((el) => Math.floor(el / 365)),
+//         },
+//       ],
+//     },
+
+//     options: {
+//       scales: {
+//         yAxes: [
+//           {
+//             ticks: {
+//               beginAtZero: true,
+//             },
+//           },
+//         ],
+//       },
+//     },
+//   });
+// }
+
+// function renderDayStats(ctx) {
+//   const chart = new Chart(ctx, {
+//     type: 'bar',
+//     data: {
+//       labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+//       datasets: [
+//         {
+//           label: 'Avg Views',
+//           borderColor: '#6eb799',
+//           backgroundColor: '#6eb799',
+//           data: sumByDay.map((el) => Math.floor(el / 52)),
+//         },
+//       ],
+//     },
+
+//     options: {
+//       scales: {
+//         yAxes: [
+//           {
+//             ticks: {
+//               beginAtZero: true,
+//             },
+//           },
+//         ],
+//       },
+//     },
+//   });
+// }
+// function renderDateStats(ctx) {
+//   let dateSum = {};
+//   hour.forEach(([time, views]) => {
+//     let key = getDateKeyFromEpoch(time);
+//     if (!dateSum[key]) dateSum[key] = 0;
+//     dateSum[key] += views;
+//   });
+//   const chart = new Chart(ctx, {
+//     type: 'bar',
+//     data: {
+//       labels: Object.keys(dateSum).map((key) => getDateLabelFromDateKey(key)),
+//       datasets: [
+//         {
+//           label: 'Avg Views',
+//           borderColor: '#6eb799',
+//           backgroundColor: '#6eb799',
+//           data: dateSum,
+//         },
+//       ],
+//     },
+
+//     options: {
+//       scales: {
+//         yAxes: [
+//           {
+//             ticks: {
+//               beginAtZero: true,
+//             },
+//           },
+//         ],
+//       },
+//     },
+//   });
+// }

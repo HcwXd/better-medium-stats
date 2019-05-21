@@ -7,13 +7,12 @@ const NOW = {
 };
 
 Date.prototype.addTime = function(timeType, timeOffset) {
-  console.log(this);
   let result = new Date(this);
   result[`set${timeType}`](result[`get${timeType}`]() + timeOffset);
   return result;
 };
 
-const numOfMonthFetched = 36;
+const numOfMonthFetched = 48;
 
 const getDateKeyFromEpoch = (date) =>
   date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
@@ -42,6 +41,11 @@ timeFormatBtnWrap.addEventListener('click', function(e) {
   changeTimeFormatState(e.target.dataset.timeformat);
 });
 
+function changeTimeFormatState(newTimeFormat) {
+  timeFormatState = newTimeFormat;
+  renderHandler[timeFormatState](hourView[fromTimeState][0], fromTimeState);
+}
+
 const forwardTimeBtn = document.querySelector('.forward_time_btn');
 forwardTimeBtn.addEventListener('click', forwardTimeHandler);
 
@@ -49,8 +53,12 @@ const backwardTimeBtn = document.querySelector('.backward_time_btn');
 backwardTimeBtn.addEventListener('click', backwardTimeHandler);
 
 function forwardTimeHandler() {
-  console.log(+this.dataset.direction);
-  if (this.classList.contains('change_time_btn-prohibit')) return;
+  if (
+    this.classList.contains('change_time_btn-prohibit') &&
+    hourView[fromTimeState] === undefined
+  ) {
+    return;
+  }
 
   if (timeFormatState === 'hour') {
     fromTimeState -= 24;
@@ -74,7 +82,6 @@ function forwardTimeHandler() {
 }
 
 function backwardTimeHandler() {
-  console.log(+this.dataset.direction);
   if (this.classList.contains('change_time_btn-prohibit')) return;
 
   if (timeFormatState === 'hour') {
@@ -117,7 +124,6 @@ const renderHandler = {
       labels.push(label);
       data.push(views);
     }
-    console.log({ labels, data });
 
     renderBarChart(labels.reverse(), data.reverse(), lastestTime);
   },
@@ -143,7 +149,6 @@ const renderHandler = {
       }
       data[data.length - 1] += views;
     }
-    console.log({ labels, data });
 
     renderBarChart(labels.reverse(), data.reverse(), lastestTime);
   },
@@ -168,7 +173,6 @@ const renderHandler = {
       }
       data[data.length - 1] += views;
     }
-    console.log({ labels, data });
 
     renderBarChart(labels.reverse(), data.reverse(), lastestTime);
   },
@@ -193,7 +197,6 @@ const renderHandler = {
       }
       data[data.length - 1] += views;
     }
-    console.log({ labels, data });
 
     renderBarChart(labels.reverse(), data.reverse(), lastestTime);
   },
@@ -218,7 +221,6 @@ const renderHandler = {
       }
       data[data.length - 1] += views;
     }
-    console.log({ labels, data });
 
     renderBarChart(labels.reverse(), data.reverse(), lastestTime);
   },
@@ -289,11 +291,6 @@ function renderBarChart(labels, data, timeStamp) {
   });
 }
 
-function changeTimeFormatState(newTimeFormat) {
-  timeFormatState = newTimeFormat;
-  renderHandler[timeFormatState](hourView[fromTimeState][0], fromTimeState);
-}
-
 function init() {
   let sumByHour = [...Array(24)].fill(0);
   let sumByDay = [...Array(7)].fill(0);
@@ -321,8 +318,6 @@ function init() {
       .then(function(textRes) {
         const data = JSON.parse(textRes.split('</x>')[1]);
         const { value: notiRawData } = data.payload;
-        // console.log(fromTime);
-        // console.log(notiRawData.length);
         let curHourView = [];
         notiRawData.forEach((notiItem) => {
           let timeStamp = new Date(notiItem.timestampMs);
@@ -336,105 +331,5 @@ function init() {
       .catch(function(err) {
         console.error(err);
       });
-  }
-
-  function renderHourStats() {
-    const ctx = document.getElementById('hourStatsChart').getContext('2d');
-    document.querySelector('#hourStats_loader').style.display = 'none';
-    // renderDayStats(ctx);
-    renderHourlyStats(ctx);
-    // renderDateStats(ctx);
-  }
-
-  function renderHourlyStats(ctx) {
-    const chart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: [...Array(23)].map((_, idx) => `${idx}:00`),
-        datasets: [
-          {
-            label: 'Avg Views',
-            borderColor: '#6eb799',
-            backgroundColor: '#6eb799',
-            data: sumByHour.map((el) => Math.floor(el / 365)),
-          },
-        ],
-      },
-
-      options: {
-        scales: {
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-              },
-            },
-          ],
-        },
-      },
-    });
-  }
-
-  function renderDayStats(ctx) {
-    const chart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        datasets: [
-          {
-            label: 'Avg Views',
-            borderColor: '#6eb799',
-            backgroundColor: '#6eb799',
-            data: sumByDay.map((el) => Math.floor(el / 52)),
-          },
-        ],
-      },
-
-      options: {
-        scales: {
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-              },
-            },
-          ],
-        },
-      },
-    });
-  }
-  function renderDateStats(ctx) {
-    let dateSum = {};
-    hour.forEach(([time, views]) => {
-      let key = getDateKeyFromEpoch(time);
-      if (!dateSum[key]) dateSum[key] = 0;
-      dateSum[key] += views;
-    });
-    const chart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: Object.keys(dateSum).map((key) => getDateLabelFromDateKey(key)),
-        datasets: [
-          {
-            label: 'Avg Views',
-            borderColor: '#6eb799',
-            backgroundColor: '#6eb799',
-            data: dateSum,
-          },
-        ],
-      },
-
-      options: {
-        scales: {
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-              },
-            },
-          ],
-        },
-      },
-    });
   }
 }
