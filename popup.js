@@ -24,6 +24,7 @@ const getDateLabelFromDateKey = (key) => `${Math.floor((key % 10000) / 100)}/${k
 
 let fetchReadyState = Array(numOfMonthFetched).fill(false);
 let hourView = [];
+let monthView = [...Array(numOfMonthFetched / 12 + 1)].map(() => [...Array(12)].map(() => 0));
 let timeFormatState = 'day';
 let fromTimeState = 0;
 
@@ -43,6 +44,9 @@ timeFormatBtnWrap.addEventListener('click', function(e) {
 
 function changeTimeFormatState(newTimeFormat) {
   timeFormatState = newTimeFormat;
+  if (hourView[fromTimeState] !== undefined) {
+    backwardTimeBtn.classList.remove('change_time_btn-prohibit');
+  }
   renderHandler[timeFormatState](hourView[fromTimeState][0], fromTimeState);
 }
 
@@ -177,23 +181,13 @@ const renderHandler = {
   month: function(lastestTime, hourIdx) {
     let labels = [];
     let data = [];
-    for (let idx = 0; idx < 24 * 30 * 6; idx++) {
-      if (hourView[hourIdx + idx] === undefined) {
-        backwardTimeBtn.classList.add('change_time_btn-prohibit');
-        break;
-      }
-      let [timeStamp, views] = hourView[hourIdx + idx];
-      if (idx % (24 * 30) === 0) {
-        let label =
-          `${timeStamp.getMonth() + 1}/${timeStamp.getDate()}` +
-          ` - ` +
-          `${timeStamp.addTime('Month', 1).getMonth() + 1}/${timeStamp
-            .addTime('Month', 1)
-            .getDate()}`;
-        labels.push(label);
-        data.push(0);
-      }
-      data[data.length - 1] += views;
+    let curTime = hourView[hourIdx][0];
+
+    for (let idx = 0; idx < 6; idx++) {
+      let label = `${curTime}`.split(' ')[1];
+      labels.push(label);
+      data.push(monthView[NOW.year - curTime.getFullYear()][curTime.getMonth()]);
+      curTime = curTime.addTime('Month', -1);
     }
 
     renderBarChart(labels.reverse(), data.reverse(), lastestTime);
@@ -201,23 +195,12 @@ const renderHandler = {
   year: function(lastestTime, hourIdx) {
     let labels = [];
     let data = [];
-    for (let idx = 0; idx < 24 * 30 * 12 * 6; idx++) {
-      if (hourView[hourIdx + idx] === undefined) {
-        backwardTimeBtn.classList.add('change_time_btn-prohibit');
-        break;
-      }
-      let [timeStamp, views] = hourView[hourIdx + idx];
-      if (idx % (24 * 30 * 12) === 0) {
-        let label =
-          `${timeStamp.getFullYear()}/${timeStamp.getMonth()}` +
-          ` - ` +
-          `${timeStamp.addTime('FullYear', 1).getFullYear()}/${timeStamp
-            .addTime('FullYear', 1)
-            .getMonth()}`;
-        labels.push(label);
-        data.push(0);
-      }
-      data[data.length - 1] += views;
+    let curTime = hourView[hourIdx][0];
+    for (let idx = 0; idx < 3; idx++) {
+      let label = `${curTime}`.split(' ')[3];
+      labels.push(label);
+      data.push(monthView[NOW.year - curTime.getFullYear()].reduce((acc, cur) => acc + cur));
+      curTime = curTime.addTime('FullYear', -1);
     }
 
     renderBarChart(labels.reverse(), data.reverse(), lastestTime);
@@ -322,6 +305,7 @@ function init() {
           curHourView.push([timeStamp, notiItem.views]);
           sumByHour[timeStamp.getHours()] += notiItem.views;
           sumByDay[timeStamp.getDay()] += notiItem.views;
+          monthView[NOW.year - timeStamp.getFullYear()][timeStamp.getMonth()] += notiItem.views;
         });
         if (hourView.length === 0) {
           while (curHourView[curHourView.length - 1][0].getHours() !== 23) {
