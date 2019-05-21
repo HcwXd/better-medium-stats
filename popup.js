@@ -116,11 +116,8 @@ const renderHandler = {
         break;
       }
       let [timeStamp, views] = hourView[hourIdx + idx];
-      let label =
-        `${timeStamp.getHours()}:00` +
-        ` - ` +
-        `${timeStamp.addTime('Hours', 1).getHours()}:00` +
-        ` (${timeStamp.getMonth() + 1}/${timeStamp.getDate()})`;
+      let label = `${23 - idx}:00 - ${23 - idx + 1}:00 (${timeStamp.getMonth() +
+        1}/${timeStamp.getDate()})`;
       labels.push(label);
       data.push(views);
     }
@@ -163,11 +160,12 @@ const renderHandler = {
       let [timeStamp, views] = hourView[hourIdx + idx];
       if (idx % (24 * 7) === 0) {
         let label =
-          `${timeStamp.getMonth() + 1}/${timeStamp.getDate()}` +
+          `${timeStamp.addTime('Date', -6).getMonth() + 1}/${timeStamp
+            .addTime('Date', -6)
+            .getDate()}` +
           ` - ` +
-          `${timeStamp.addTime('Date', 7).getMonth() + 1}/${timeStamp
-            .addTime('Date', 7)
-            .getDate()}`;
+          `${timeStamp.getMonth() + 1}/${timeStamp.getDate()}`;
+
         labels.push(label);
         data.push(0);
       }
@@ -325,6 +323,11 @@ function init() {
           sumByHour[timeStamp.getHours()] += notiItem.views;
           sumByDay[timeStamp.getDay()] += notiItem.views;
         });
+        if (hourView.length === 0) {
+          while (curHourView[curHourView.length - 1][0].getHours() !== 23) {
+            curHourView.push([curHourView[curHourView.length - 1][0].addTime('Hours', 1), 0]);
+          }
+        }
         hourView.push(...curHourView.reverse());
         fetchStoriesHourStats(toTime);
       })
