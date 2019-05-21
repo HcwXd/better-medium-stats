@@ -12,6 +12,10 @@ Date.prototype.addTime = function(timeType, timeOffset) {
   return result;
 };
 
+Date.prototype.daysInThisMonth = function() {
+  return new Date(this.getFullYear(), this.getMonth() + 1, 0).getDate();
+};
+
 const numOfMonthFetched = 48;
 
 const getDateKeyFromEpoch = (date) =>
@@ -138,13 +142,7 @@ const renderHandler = {
       }
       let [timeStamp, views] = hourView[hourIdx + idx];
       if (idx % 24 === 0) {
-        let label =
-          `${timeStamp.getMonth() + 1}/${timeStamp.getDate()}` +
-          ` - ` +
-          `${timeStamp.addTime('Date', 1).getMonth() + 1}/${timeStamp
-            .addTime('Date', 1)
-            .getDate()}`;
-
+        let label = `${timeStamp.getMonth() + 1}/${timeStamp.getDate()}`;
         labels.push(label);
         data.push(0);
       }
@@ -227,7 +225,7 @@ function renderBarChart(labels, data, timeStamp) {
         {
           label: 'Views',
           borderColor: '#6eb799',
-          backgroundColor: '#6eb799',
+          backgroundColor: 'rgba(104, 172, 144, 0.9)',
           data: data,
         },
       ],
@@ -243,9 +241,17 @@ function renderBarChart(labels, data, timeStamp) {
         position: 'bottom',
       },
       tooltips: {
+        displayColors: false,
+        titleFontSize: 14,
+        xPadding: 10,
+        yPadding: 10,
+        bodyFontSize: 14,
         callbacks: {
-          title: function(t, d) {
-            return d.labels[t[0].index];
+          title: function(tooltipItem, data) {
+            return data.labels[tooltipItem[0].index];
+          },
+          label: function(tooltipItem, data) {
+            return 'Views: ' + data.datasets[0].data[tooltipItem.index].toLocaleString();
           },
         },
       },
@@ -254,6 +260,7 @@ function renderBarChart(labels, data, timeStamp) {
         xAxes: [
           {
             ticks: {
+              fontSize: 14,
               callback: function(t) {
                 return t.split(' - ')[0];
               },
@@ -263,7 +270,11 @@ function renderBarChart(labels, data, timeStamp) {
         yAxes: [
           {
             ticks: {
+              fontSize: 14,
               beginAtZero: true,
+              callback: function(value) {
+                return value.toLocaleString();
+              },
             },
           },
         ],

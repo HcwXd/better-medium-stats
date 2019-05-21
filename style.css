@@ -87,7 +87,13 @@ table {
         background-color: #6eb799; }
   .container .change_time_btn_wrap {
     margin-top: 15px;
-    display: flex; }
+    display: flex;
+    position: relative; }
+    .container .change_time_btn_wrap .data_progress_bar_wrap {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: -100%; }
     .container .change_time_btn_wrap .change_time_btn {
       padding: 10px;
       border: 1px solid rgba(0, 0, 0, 0.3);
