@@ -325,3 +325,81 @@ function init() {
       });
   }
 }
+
+displaySummaryData();
+
+function numFormater(number) {
+  const SI_SYMBOL = ['', 'k', 'M', 'G', 'T', 'P', 'E'];
+
+  let tier = (Math.log10(number) / 3) | 0;
+  if (tier == 0) return number;
+  let suffix = SI_SYMBOL[tier];
+  let scale = Math.pow(10, tier * 3);
+  let scaled = number / scale;
+  return scaled.toFixed(1) + suffix;
+}
+
+function displaySummaryData() {
+  fetch('https://medium.com/me/stats?format=json&limit=100000')
+    .then(function(response) {
+      return response.text();
+    })
+    .then(function(textRes) {
+      const data = JSON.parse(textRes.split('</x>')[1]);
+      const storyRawData = data.payload.value;
+      const storyData = {
+        totalViews: getTotal(storyRawData, 'views'),
+        totalReads: getTotal(storyRawData, 'reads'),
+        totalClaps: getTotal(storyRawData, 'claps'),
+        totalUpvotes: getTotal(storyRawData, 'upvotes'),
+        totalStories: storyRawData.length,
+      };
+      renderStoryData(storyData);
+    })
+    .catch(function(err) {
+      console.error(err);
+      const errorMsg = `<div class="label">Please log in to your Medium account :)<div>`;
+      document.querySelector('#table_container').innerHTML = errorMsg;
+    });
+
+  function getTotal(arr, type) {
+    return arr.reduce((sum, el) => {
+      return sum + el[type];
+    }, 0);
+  }
+
+  function renderStoryData({ totalViews, totalReads, totalClaps, totalUpvotes, totalStories }) {
+    document.querySelector('#table_loader').style.display = 'none';
+    const html = `
+                  <table>
+                      <thead>
+                        <tr>
+                          <th>Types</th>
+                          <th>Views</th>
+                          <th>Reads</th>
+                          <th>Claps</th>
+                          <th>Fans</th>
+                        </tr>
+                      <thead>
+                      <tbody>
+                        <tr>
+                          <td>Total</td>
+                          <td>${numFormater(totalViews)}</td>
+                          <td>${numFormater(totalReads)}</td>
+                          <td>${numFormater(totalClaps)}</td>
+                          <td>${numFormater(totalUpvotes)}</td>
+                        </tr>
+                        <tr>
+                          <td>Average</td>
+                          <td>${numFormater(Math.floor(totalViews / totalStories))}</td>
+                          <td>${numFormater(Math.floor(totalReads / totalStories))}</td>
+                          <td>${numFormater(Math.floor(totalClaps / totalStories))}</td>
+                          <td>${numFormater(Math.floor(totalUpvotes / totalStories))}</td>
+                        </tr>
+                      </tbody>
+                    <table/>
+                  `;
+
+    document.querySelector('.container').innerHTML = html;
+  }
+}
