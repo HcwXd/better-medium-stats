@@ -2,8 +2,8 @@
   "manifest_version": 2,
 
   "name": "Medium stats counter",
-  "description": "This extension counts the total views/reads/fans of user's Medium stories",
-  "version": "1.4.0",
+  "description": "This extension visualize Medium's stats in a better way.",
+  "version": "1.5.0",
 
   "browser_action": {
     "default_title": "Medium stats counter",
