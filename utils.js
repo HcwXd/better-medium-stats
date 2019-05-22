@@ -1,6 +1,17 @@
 displaySummaryData();
 // displayNotiData();
 
+function numFormater(number) {
+  const SI_SYMBOL = ['', 'k', 'M', 'G', 'T', 'P', 'E'];
+
+  let tier = (Math.log10(number) / 3) | 0;
+  if (tier == 0) return number;
+  let suffix = SI_SYMBOL[tier];
+  let scale = Math.pow(10, tier * 3);
+  let scaled = number / scale;
+  return scaled.toFixed(1) + suffix;
+}
+
 function displaySummaryData() {
   fetch('https://medium.com/me/stats?format=json&limit=100000')
     .then(function(response) {
@@ -46,17 +57,17 @@ function displaySummaryData() {
                       <tbody>
                         <tr>
                           <td>Total</td>
-                          <td>${totalViews.toLocaleString()}</td>
-                          <td>${totalReads.toLocaleString()}</td>
-                          <td>${totalClaps.toLocaleString()}</td>
-                          <td>${totalUpvotes.toLocaleString()}</td>
+                          <td>${numFormater(totalViews)}</td>
+                          <td>${numFormater(totalReads)}</td>
+                          <td>${numFormater(totalClaps)}</td>
+                          <td>${numFormater(totalUpvotes)}</td>
                         </tr>
                         <tr>
                           <td>Average</td>
-                          <td>${Math.floor(totalViews / totalStories).toLocaleString()}</td>
-                          <td>${Math.floor(totalReads / totalStories).toLocaleString()}</td>
-                          <td>${Math.floor(totalClaps / totalStories).toLocaleString()}</td>
-                          <td>${Math.floor(totalUpvotes / totalStories).toLocaleString()}</td>
+                          <td>${numFormater(Math.floor(totalViews / totalStories))}</td>
+                          <td>${numFormater(Math.floor(totalReads / totalStories))}</td>
+                          <td>${numFormater(Math.floor(totalClaps / totalStories))}</td>
+                          <td>${numFormater(Math.floor(totalUpvotes / totalStories))}</td>
                         </tr>
                       </tbody>
                     <table/>
