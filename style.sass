@@ -11,14 +11,15 @@ body
   transition-duration: 1s
 
 .title_wrap
-  padding: 25px 25px 5px 25px
+  padding: 25px 15px 15px 25px
   display: flex
   justify-content: space-between
   font-size: 6px
   color: black
   .title
-    font-size: 18px
-    // font-family: 'Cutive Mono', monospace
+    font-size: 20px
+    font-family: 'Cutive Mono', monospace
+    color: rgba(#000, 1)
 
 table
   border-spacing: 1
@@ -26,12 +27,13 @@ table
   border-radius: 6px
   text-align: right
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1)
+  font-size: 14px
   td, th
     padding: 10px
   thead tr
     padding: 10px
     background: rgb(110, 183, 153)
-    font-size: 16px
+    
   tbody tr
     border-bottom: 1px solid #e3f1d5
   thead tr th:nth-child(1), tbody tr td:nth-child(1)
@@ -39,12 +41,14 @@ table
     border-right: 1px solid #e3f1d5
 
 .container
+  width: 400px
+  border-top: 1px solid rgb(169, 169, 179)
   padding: 25px
   align-items: center
   justify-content: space-around
   display: flex
   flex-direction: column
-  font-size: 16px
+  font-size: 14px
   transition-duration: 1s
   font-family: 'Cutive Mono', monospace
   .loader
@@ -63,7 +67,6 @@ table
         animation: grow 1s ease-in-out 0.45s infinite
   #hourStatsChart
     display: none
-    width: 500px
   .time_format_btn_wrap
     margin-bottom: 15px
     display: flex
@@ -98,7 +101,6 @@ table
       top: 50%
       transform: translateY(-50%) 
       left: -100%
-
     .change_time_btn
       padding: 10px
       border: 1px solid rgba(#000, 0.3)

@@ -9,26 +9,28 @@ body {
   transition-duration: 1s; }
 
 .title_wrap {
-  padding: 25px 25px 5px 25px;
+  padding: 25px 15px 15px 25px;
   display: flex;
   justify-content: space-between;
   font-size: 6px;
   color: black; }
   .title_wrap .title {
-    font-size: 18px; }
+    font-size: 20px;
+    font-family: "Cutive Mono", monospace;
+    color: black; }
 
 table {
   border-spacing: 1;
   border-collapse: collapse;
   border-radius: 6px;
   text-align: right;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); }
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  font-size: 14px; }
   table td, table th {
     padding: 10px; }
   table thead tr {
     padding: 10px;
-    background: #6eb799;
-    font-size: 16px; }
+    background: #6eb799; }
   table tbody tr {
     border-bottom: 1px solid #e3f1d5; }
   table thead tr th:nth-child(1), table tbody tr td:nth-child(1) {
@@ -36,12 +38,14 @@ table {
     border-right: 1px solid #e3f1d5; }
 
 .container {
+  width: 400px;
+  border-top: 1px solid #a9a9b3;
   padding: 25px;
   align-items: center;
   justify-content: space-around;
   display: flex;
   flex-direction: column;
-  font-size: 16px;
+  font-size: 14px;
   transition-duration: 1s;
   font-family: "Cutive Mono", monospace; }
   .container .loader span {
@@ -58,8 +62,7 @@ table {
     .container .loader span:nth-child(4) {
       animation: grow 1s ease-in-out 0.45s infinite; }
   .container #hourStatsChart {
-    display: none;
-    width: 500px; }
+    display: none; }
   .container .time_format_btn_wrap {
     margin-bottom: 15px;
     display: flex; }
