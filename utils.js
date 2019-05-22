@@ -1,70 +1,70 @@
-// displaySummaryData();
+displaySummaryData();
 // displayNotiData();
 
-// function displaySummaryData() {
-//   fetch('https://medium.com/me/stats?format=json&limit=100000')
-//     .then(function(response) {
-//       return response.text();
-//     })
-//     .then(function(textRes) {
-//       const data = JSON.parse(textRes.split('</x>')[1]);
-//       const storyRawData = data.payload.value;
-//       const storyData = {
-//         totalViews: getTotal(storyRawData, 'views'),
-//         totalReads: getTotal(storyRawData, 'reads'),
-//         totalClaps: getTotal(storyRawData, 'claps'),
-//         totalUpvotes: getTotal(storyRawData, 'upvotes'),
-//         totalStories: storyRawData.length,
-//       };
-//       renderStoryData(storyData);
-//     })
-//     .catch(function(err) {
-//       console.error(err);
-//       const errorMsg = `<div class="label">Please log in to your Medium account :)<div>`;
-//       document.querySelector('#table_container').innerHTML = errorMsg;
-//     });
+function displaySummaryData() {
+  fetch('https://medium.com/me/stats?format=json&limit=100000')
+    .then(function(response) {
+      return response.text();
+    })
+    .then(function(textRes) {
+      const data = JSON.parse(textRes.split('</x>')[1]);
+      const storyRawData = data.payload.value;
+      const storyData = {
+        totalViews: getTotal(storyRawData, 'views'),
+        totalReads: getTotal(storyRawData, 'reads'),
+        totalClaps: getTotal(storyRawData, 'claps'),
+        totalUpvotes: getTotal(storyRawData, 'upvotes'),
+        totalStories: storyRawData.length,
+      };
+      renderStoryData(storyData);
+    })
+    .catch(function(err) {
+      console.error(err);
+      const errorMsg = `<div class="label">Please log in to your Medium account :)<div>`;
+      document.querySelector('#table_container').innerHTML = errorMsg;
+    });
 
-//   function getTotal(arr, type) {
-//     return arr.reduce((sum, el) => {
-//       return sum + el[type];
-//     }, 0);
-//   }
+  function getTotal(arr, type) {
+    return arr.reduce((sum, el) => {
+      return sum + el[type];
+    }, 0);
+  }
 
-//   function renderStoryData({ totalViews, totalReads, totalClaps, totalUpvotes, totalStories }) {
-//     document.querySelector('#table_loader').style.display = 'none';
-//     const html = `
-//                   <table>
-//                       <thead>
-//                         <tr>
-//                           <th>Types</th>
-//                           <th>Views</th>
-//                           <th>Reads</th>
-//                           <th>Claps</th>
-//                           <th>Fans</th>
-//                         </tr>
-//                       <thead>
-//                       <tbody>
-//                         <tr>
-//                           <td>Total</td>
-//                           <td>${totalViews.toLocaleString()}</td>
-//                           <td>${totalReads.toLocaleString()}</td>
-//                           <td>${totalClaps.toLocaleString()}</td>
-//                           <td>${totalUpvotes.toLocaleString()}</td>
-//                         </tr>
-//                         <tr>
-//                           <td>Average</td>
-//                           <td>${Math.floor(totalViews / totalStories).toLocaleString()}</td>
-//                           <td>${Math.floor(totalReads / totalStories).toLocaleString()}</td>
-//                           <td>${Math.floor(totalClaps / totalStories).toLocaleString()}</td>
-//                           <td>${Math.floor(totalUpvotes / totalStories).toLocaleString()}</td>
-//                         </tr>
-//                       </tbody>
-//                     <table/>
-//                   `;
+  function renderStoryData({ totalViews, totalReads, totalClaps, totalUpvotes, totalStories }) {
+    document.querySelector('#table_loader').style.display = 'none';
+    const html = `
+                  <table>
+                      <thead>
+                        <tr>
+                          <th>Types</th>
+                          <th>Views</th>
+                          <th>Reads</th>
+                          <th>Claps</th>
+                          <th>Fans</th>
+                        </tr>
+                      <thead>
+                      <tbody>
+                        <tr>
+                          <td>Total</td>
+                          <td>${totalViews.toLocaleString()}</td>
+                          <td>${totalReads.toLocaleString()}</td>
+                          <td>${totalClaps.toLocaleString()}</td>
+                          <td>${totalUpvotes.toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                          <td>Average</td>
+                          <td>${Math.floor(totalViews / totalStories).toLocaleString()}</td>
+                          <td>${Math.floor(totalReads / totalStories).toLocaleString()}</td>
+                          <td>${Math.floor(totalClaps / totalStories).toLocaleString()}</td>
+                          <td>${Math.floor(totalUpvotes / totalStories).toLocaleString()}</td>
+                        </tr>
+                      </tbody>
+                    <table/>
+                  `;
 
-//     document.querySelector('.container').innerHTML = html;
-//   }
-// }
+    document.querySelector('.container').innerHTML = html;
+  }
+}
 // function displayNotiData() {
 //   let notiStats = createNotiStats();
 

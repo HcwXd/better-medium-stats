@@ -236,16 +236,16 @@ function renderBarChart(labels, data, timeStamp) {
         display: false,
       },
       title: {
-        display: true,
+        display: false,
         text: timeStamp.getFullYear(),
         position: 'bottom',
       },
       tooltips: {
         displayColors: false,
-        titleFontSize: 14,
-        xPadding: 10,
-        yPadding: 10,
-        bodyFontSize: 14,
+        // titleFontSize: 14,
+        // xPadding: 10,
+        // yPadding: 10,
+        // bodyFontSize: 14,
         callbacks: {
           title: function(tooltipItem, data) {
             return data.labels[tooltipItem[0].index];
@@ -260,7 +260,7 @@ function renderBarChart(labels, data, timeStamp) {
         xAxes: [
           {
             ticks: {
-              fontSize: 14,
+              // fontSize: 14,
               callback: function(t) {
                 return t.split(' - ')[0];
               },
@@ -270,7 +270,7 @@ function renderBarChart(labels, data, timeStamp) {
         yAxes: [
           {
             ticks: {
-              fontSize: 14,
+              // fontSize: 14,
               beginAtZero: true,
               callback: function(value) {
                 return value.toLocaleString();
