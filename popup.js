@@ -51,7 +51,7 @@ function changeTimeFormatState(newTimeFormat) {
   if (hourView[fromTimeState] !== undefined) {
     backwardTimeBtn.classList.remove('change_time_btn-prohibit');
   }
-  renderHandler[timeFormatState](hourView[fromTimeState][0], fromTimeState);
+  renderHandler[timeFormatState](fromTimeState);
 }
 
 const forwardTimeBtn = document.querySelector('.forward_time_btn');
@@ -86,7 +86,7 @@ function forwardTimeHandler() {
   if (hourView[fromTimeState] !== undefined) {
     backwardTimeBtn.classList.remove('change_time_btn-prohibit');
   }
-  renderHandler[timeFormatState](hourView[fromTimeState][0], fromTimeState);
+  renderHandler[timeFormatState](fromTimeState);
 }
 
 function backwardTimeHandler() {
@@ -110,12 +110,12 @@ function backwardTimeHandler() {
     backwardTimeBtn.classList.add('change_time_btn-prohibit');
     return;
   }
-  renderHandler[timeFormatState](hourView[fromTimeState][0], fromTimeState);
+  renderHandler[timeFormatState](fromTimeState);
 }
 
 init();
 const renderHandler = {
-  hour: function(lastestTime, hourIdx) {
+  hour: function(hourIdx) {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24; idx++) {
@@ -130,9 +130,9 @@ const renderHandler = {
       data.push(views);
     }
 
-    renderBarChart(labels.reverse(), data.reverse(), lastestTime);
+    renderBarChart(labels.reverse(), data.reverse(), hourView[fromTimeState][0]);
   },
-  day: function(lastestTime, hourIdx) {
+  day: function(hourIdx) {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24 * 7; idx++) {
@@ -149,9 +149,9 @@ const renderHandler = {
       data[data.length - 1] += views;
     }
 
-    renderBarChart(labels.reverse(), data.reverse(), lastestTime);
+    renderBarChart(labels.reverse(), data.reverse(), hourView[fromTimeState][0]);
   },
-  week: function(lastestTime, hourIdx) {
+  week: function(hourIdx) {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24 * 7 * 8; idx++) {
@@ -174,9 +174,9 @@ const renderHandler = {
       data[data.length - 1] += views;
     }
 
-    renderBarChart(labels.reverse(), data.reverse(), lastestTime);
+    renderBarChart(labels.reverse(), data.reverse(), hourView[fromTimeState][0]);
   },
-  month: function(lastestTime, hourIdx) {
+  month: function(hourIdx) {
     let labels = [];
     let data = [];
     let curTime = hourView[hourIdx][0];
@@ -188,9 +188,9 @@ const renderHandler = {
       curTime = curTime.addTime('Month', -1);
     }
 
-    renderBarChart(labels.reverse(), data.reverse(), lastestTime);
+    renderBarChart(labels.reverse(), data.reverse(), hourView[fromTimeState][0]);
   },
-  year: function(lastestTime, hourIdx) {
+  year: function(hourIdx) {
     let labels = [];
     let data = [];
     let curTime = hourView[hourIdx][0];
@@ -201,7 +201,7 @@ const renderHandler = {
       curTime = curTime.addTime('FullYear', -1);
     }
 
-    renderBarChart(labels.reverse(), data.reverse(), lastestTime);
+    renderBarChart(labels.reverse(), data.reverse(), hourView[fromTimeState][0]);
   },
 };
 const ctx = document.getElementById('hourStatsChart').getContext('2d');
@@ -236,7 +236,7 @@ function renderBarChart(labels, data, timeStamp) {
         display: false,
       },
       title: {
-        display: false,
+        display: true,
         text: timeStamp.getFullYear(),
         position: 'bottom',
       },
@@ -286,7 +286,7 @@ function init() {
     for (let idx = 0; idx < numOfMonthFetched; idx++) {
       if (!fetchReadyState[idx] && fromTime < new Date(NOW.year, NOW.month - idx, NOW.date)) {
         fetchReadyState[idx] = true;
-        if (idx === 0) renderHandler['day'](hourView[fromTimeState][0], 0);
+        if (idx === 0) renderHandler['day'](0);
         if (idx === numOfMonthFetched) return;
       }
     }
