@@ -31,6 +31,8 @@ let hourView = [];
 let monthView = [...Array(numOfMonthFetched / 12 + 1)].map(() => [...Array(12)].map(() => 0));
 let timeFormatState = 'day';
 let fromTimeState = 0;
+let isFinishFetch = false;
+let tryFinishFetchCounter = 0;
 
 const timeFormatBtnWrap = document.querySelector('.time_format_btn_wrap');
 timeFormatBtnWrap.addEventListener('click', function(e) {
@@ -283,11 +285,18 @@ function init() {
 
   fetchStoriesHourStats(NOW.epoch);
   function fetchStoriesHourStats(fromTime) {
+    if (tryFinishFetchCounter > 1) {
+      isFinishFetch = true;
+      return;
+    }
     for (let idx = 0; idx < numOfMonthFetched; idx++) {
       if (!fetchReadyState[idx] && fromTime < new Date(NOW.year, NOW.month - idx, NOW.date)) {
         fetchReadyState[idx] = true;
         if (idx === 0) renderHandler['day'](0);
-        if (idx === numOfMonthFetched) return;
+        if (idx === numOfMonthFetched - 1) {
+          isFinishFetch = true;
+          return;
+        }
       }
     }
 
@@ -305,13 +314,16 @@ function init() {
         const data = JSON.parse(textRes.split('</x>')[1]);
         const { value: notiRawData } = data.payload;
         let curHourView = [];
+        let isZeroView = true;
         notiRawData.forEach((notiItem) => {
+          if (notiItem.views > 0) isZeroView = false;
           let timeStamp = new Date(notiItem.timestampMs);
           curHourView.push([timeStamp, notiItem.views]);
           sumByHour[timeStamp.getHours()] += notiItem.views;
           sumByDay[timeStamp.getDay()] += notiItem.views;
           monthView[NOW.year - timeStamp.getFullYear()][timeStamp.getMonth()] += notiItem.views;
         });
+        if (isZeroView) tryFinishFetchCounter++;
         if (hourView.length === 0) {
           while (curHourView[curHourView.length - 1][0].getHours() !== 23) {
             curHourView.push([curHourView[curHourView.length - 1][0].addTime('Hours', 1), 0]);
@@ -402,4 +414,67 @@ function displaySummaryData() {
 
     document.querySelector('.container').innerHTML = html;
   }
+}
+
+const download_btn = document.querySelector('.feather-download');
+const download_loader = document.querySelector('.download_loader');
+const download_btn_wrap = document.querySelector('.download_btn_wrap');
+
+download_btn.addEventListener('click', handleDownload);
+
+function handleDownload() {
+  download_btn.style.display = 'none';
+  download_loader.style.display = 'block';
+  const pollingFetchState = setInterval(() => {
+    if (isFinishFetch) {
+      exportToCsv();
+      download_btn.style.display = 'block';
+      download_loader.style.display = 'none';
+      clearInterval(pollingFetchState);
+    }
+  }, 100);
+}
+function exportToCsv() {
+  let content = [['Year', 'Month', 'Day', 'Views']];
+  let curDateViews = 0;
+  let curDateKey = getDateKeyFromEpoch(new Date(hourView[0]));
+  for (let idx = 0; idx < hourView.length; idx++) {
+    const [timestamp, views] = hourView[idx];
+    const tmpDateKey = getDateKeyFromEpoch(new Date(timestamp));
+    if (curDateKey !== tmpDateKey) {
+      content.push([
+        `${curDateKey}`.slice(0, 4),
+        `${curDateKey}`.slice(4, 6),
+        `${curDateKey}`.slice(6, 8),
+        curDateViews,
+      ]);
+      curDateViews = 0;
+      curDateKey = tmpDateKey;
+    }
+    curDateViews += views;
+  }
+
+  let finalVal = '';
+
+  for (let i = 0; i < content.length; i++) {
+    let value = content[i];
+
+    for (let j = 0; j < value.length; j++) {
+      let innerValue = value[j] === null ? '' : value[j].toString();
+      let result = innerValue.replace(/"/g, '""');
+      if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"';
+      if (j > 0) finalVal += ',';
+      finalVal += result;
+    }
+
+    finalVal += '\n';
+  }
+
+  console.log(finalVal);
+
+  download_btn_wrap.setAttribute(
+    'href',
+    'data:text/csv;charset=utf-8,' + encodeURIComponent(finalVal)
+  );
+  download_btn_wrap.setAttribute('download', 'test.csv');
 }

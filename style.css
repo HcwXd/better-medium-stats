@@ -96,26 +96,40 @@ table {
     margin-top: 15px;
     display: flex;
     position: relative; }
-    .container .change_time_btn_wrap .data_progress_bar_wrap {
+    .container .change_time_btn_wrap .download_btn_wrap {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      left: -100%; }
+      left: 150%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center; }
+      .container .change_time_btn_wrap .download_btn_wrap .download_loader {
+        display: none;
+        transition: all 0.7s ease-in-out;
+        border: 5px solid #ebebeb;
+        border-bottom-color: #26B8BF;
+        width: 20px;
+        height: 20px;
+        border-radius: 100%;
+        animation: spin 1s linear infinite; }
+      .container .change_time_btn_wrap .download_btn_wrap .feather-download {
+        cursor: pointer; }
     .container .change_time_btn_wrap .change_time_btn {
       padding: 10px;
       border: 1px solid rgba(0, 0, 0, 0.3);
       color: rgba(0, 0, 0, 0.7);
       cursor: pointer;
       border-right: none; }
-      .container .change_time_btn_wrap .change_time_btn:first-child {
-        border-top-left-radius: 4px;
-        border-bottom-left-radius: 4px; }
-      .container .change_time_btn_wrap .change_time_btn:last-child {
-        border-top-right-radius: 4px;
-        border-bottom-right-radius: 4px;
-        border-right: 1px solid rgba(0, 0, 0, 0.3); }
       .container .change_time_btn_wrap .change_time_btn:hover {
         background-color: #f6f6f6; }
+    .container .change_time_btn_wrap .backward_time_btn {
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px; }
+    .container .change_time_btn_wrap .forward_time_btn {
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+      border-right: 1px solid rgba(0, 0, 0, 0.3); }
     .container .change_time_btn_wrap .change_time_btn-prohibit {
       opacity: 0.7;
       cursor: default; }
@@ -138,14 +152,13 @@ table {
 @keyframes grow {
   0%,
 100% {
-    -webkit-transform: scaleY(1);
-    -ms-transform: scaleY(1);
-    -o-transform: scaleY(1);
     transform: scaleY(1); }
   50% {
-    -webkit-transform: scaleY(1.8);
-    -ms-transform: scaleY(1.8);
-    -o-transform: scaleY(1.8);
     transform: scaleY(1.8); } }
+@keyframes spin {
+  0% {
+    transform: rotate(0deg); }
+  100% {
+    transform: rotate(360deg); } }
 
 /*# sourceMappingURL=style.css.map */
