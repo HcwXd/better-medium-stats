@@ -476,5 +476,8 @@ function exportToCsv() {
     'href',
     'data:text/csv;charset=utf-8,' + encodeURIComponent(finalVal)
   );
-  download_btn_wrap.setAttribute('download', 'test.csv');
+  download_btn_wrap.setAttribute(
+    'download',
+    `Medium-Stats-Counter-${getDateKeyFromEpoch(NOW.epoch)}.csv`
+  );
 }
