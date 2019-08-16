@@ -120,6 +120,8 @@ table
         animation: spin 1s linear infinite
       .feather-download
         cursor: pointer
+      .feather-download-ready
+        stroke: $medium-green
     .change_time_btn
       padding: 10px
       border: 1px solid rgba(#000, 0.3)
@@ -140,6 +142,21 @@ table
       cursor: default
       &:hover
         background-color: white
+  .download_wording
+    font-size: 10px
+    line-height: 12px
+    width: 400px
+    height: 0px
+    display: block
+    opacity: 0
+    text-align: center
+    transition-duration: 700ms
+    // box-shadow: 0 0 5px rgba(0, 0, 0, 0.1)
+  .download_wording-show
+    opacity: 1
+    padding: 12px
+    margin-top: 10px
+    height: initial 
 .footer
   padding: 10px 25px 10px 25px
   border-top: 1px solid rgb(169, 169, 179)

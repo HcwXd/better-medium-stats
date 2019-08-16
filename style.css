@@ -115,6 +115,8 @@ table {
         animation: spin 1s linear infinite; }
       .container .change_time_btn_wrap .download_btn_wrap .feather-download {
         cursor: pointer; }
+      .container .change_time_btn_wrap .download_btn_wrap .feather-download-ready {
+        stroke: #6eb799; }
     .container .change_time_btn_wrap .change_time_btn {
       padding: 10px;
       border: 1px solid rgba(0, 0, 0, 0.3);
@@ -135,6 +137,20 @@ table {
       cursor: default; }
       .container .change_time_btn_wrap .change_time_btn-prohibit:hover {
         background-color: white; }
+  .container .download_wording {
+    font-size: 10px;
+    line-height: 12px;
+    width: 400px;
+    height: 0px;
+    display: block;
+    opacity: 0;
+    text-align: center;
+    transition-duration: 700ms; }
+  .container .download_wording-show {
+    opacity: 1;
+    padding: 12px;
+    margin-top: 10px;
+    height: initial; }
 
 .footer {
   padding: 10px 25px 10px 25px;

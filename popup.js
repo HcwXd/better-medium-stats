@@ -419,17 +419,25 @@ function displaySummaryData() {
 const download_btn = document.querySelector('.feather-download');
 const download_loader = document.querySelector('.download_loader');
 const download_btn_wrap = document.querySelector('.download_btn_wrap');
+const download_wording = document.querySelector('.download_wording');
 
 download_btn.addEventListener('click', handleDownload);
 
 function handleDownload() {
-  download_btn.style.display = 'none';
-  download_loader.style.display = 'block';
+  if (!download_btn.classList.contains('feather-download-ready')) {
+    download_btn.style.display = 'none';
+    download_loader.style.display = 'block';
+    download_wording.classList.add('download_wording-show');
+  }
+
   const pollingFetchState = setInterval(() => {
     if (isFinishFetch) {
       exportToCsv();
       download_btn.style.display = 'block';
+      download_btn.classList.add('feather-download-ready');
       download_loader.style.display = 'none';
+      download_wording.classList.remove('download_wording-show');
+
       clearInterval(pollingFetchState);
     }
   }, 100);
