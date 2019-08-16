@@ -3,7 +3,7 @@
 
   "name": "Medium stats counter",
   "description": "Better Visualization of your Medium stats. With total views/reads and stats in different timespan like month, week, hour",
-  "version": "1.6.0",
+  "version": "1.7.0",
 
   "browser_action": {
     "default_title": "Medium stats counter",
