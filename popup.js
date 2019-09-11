@@ -1,38 +1,17 @@
 'use strict';
-const NOW = {
-  epoch: new Date(),
-  year: new Date().getFullYear(),
-  month: new Date().getMonth(),
-  date: new Date().getDate(),
-};
 
-Date.prototype.addTime = function(timeType, timeOffset) {
-  let result = new Date(this);
-  result[`set${timeType}`](result[`get${timeType}`]() + timeOffset);
-  return result;
-};
+const fetchReadyState = Array(NUMBER_OF_MONTH_FETCHED).fill(false);
+const hourViews = [];
+const monthViews = [...Array(NUMBER_OF_MONTH_FETCHED / 12 + 1)].map(() =>
+  [...Array(12)].map(() => 0)
+);
+const sumByHour = [...Array(24)].fill(0);
+const sumByDay = [...Array(7)].fill(0);
 
-Date.prototype.daysInThisMonth = function() {
-  return new Date(this.getFullYear(), this.getMonth() + 1, 0).getDate();
-};
-
-const numOfMonthFetched = 48;
-
-const getDateKeyFromEpoch = (date) =>
-  date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
-
-const getDetailedDateLabelFromEpoch = (date) =>
-  `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
-
-const getDateLabelFromDateKey = (key) => `${Math.floor((key % 10000) / 100)}/${key % 100}`;
-
-let fetchReadyState = Array(numOfMonthFetched).fill(false);
-let hourView = [];
-let monthView = [...Array(numOfMonthFetched / 12 + 1)].map(() => [...Array(12)].map(() => 0));
 let timeFormatState = 'day';
 let fromTimeState = 0;
 let isFinishFetch = false;
-let tryFinishFetchCounter = 0;
+let zeroViewCounter = 0;
 
 const timeFormatBtnWrap = document.querySelector('.time_format_btn_wrap');
 timeFormatBtnWrap.addEventListener('click', function(e) {
@@ -50,7 +29,7 @@ timeFormatBtnWrap.addEventListener('click', function(e) {
 
 function changeTimeFormatState(newTimeFormat) {
   timeFormatState = newTimeFormat;
-  if (hourView[fromTimeState] !== undefined) {
+  if (hourViews[fromTimeState] !== undefined) {
     backwardTimeBtn.classList.remove('change_time_btn-prohibit');
   }
   renderHandler[timeFormatState](fromTimeState);
@@ -65,7 +44,7 @@ backwardTimeBtn.addEventListener('click', backwardTimeHandler);
 function forwardTimeHandler() {
   if (
     this.classList.contains('change_time_btn-prohibit') &&
-    hourView[fromTimeState] === undefined
+    hourViews[fromTimeState] === undefined
   ) {
     return;
   }
@@ -85,7 +64,7 @@ function forwardTimeHandler() {
     fromTimeState = 0;
     forwardTimeBtn.classList.add('change_time_btn-prohibit');
   }
-  if (hourView[fromTimeState] !== undefined) {
+  if (hourViews[fromTimeState] !== undefined) {
     backwardTimeBtn.classList.remove('change_time_btn-prohibit');
   }
   renderHandler[timeFormatState](fromTimeState);
@@ -108,7 +87,7 @@ function backwardTimeHandler() {
   if (fromTimeState > 0) {
     forwardTimeBtn.classList.remove('change_time_btn-prohibit');
   }
-  if (hourView[fromTimeState] === undefined) {
+  if (hourViews[fromTimeState] === undefined) {
     backwardTimeBtn.classList.add('change_time_btn-prohibit');
     return;
   }
@@ -121,28 +100,28 @@ const renderHandler = {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24; idx++) {
-      if (hourView[hourIdx + idx] === undefined) {
+      if (hourViews[hourIdx + idx] === undefined) {
         backwardTimeBtn.classList.add('change_time_btn-prohibit');
         break;
       }
-      let [timeStamp, views] = hourView[hourIdx + idx];
+      let [timeStamp, views] = hourViews[hourIdx + idx];
       let label = `${23 - idx}:00 - ${23 - idx + 1}:00 (${timeStamp.getMonth() +
         1}/${timeStamp.getDate()})`;
       labels.push(label);
       data.push(views);
     }
 
-    renderBarChart(labels.reverse(), data.reverse(), hourView[fromTimeState][0]);
+    renderBarChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
   day: function(hourIdx) {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24 * 7; idx++) {
-      if (hourView[hourIdx + idx] === undefined) {
+      if (hourViews[hourIdx + idx] === undefined) {
         backwardTimeBtn.classList.add('change_time_btn-prohibit');
         break;
       }
-      let [timeStamp, views] = hourView[hourIdx + idx];
+      let [timeStamp, views] = hourViews[hourIdx + idx];
       if (idx % 24 === 0) {
         let label = `${timeStamp.getMonth() + 1}/${timeStamp.getDate()}`;
         labels.push(label);
@@ -151,17 +130,17 @@ const renderHandler = {
       data[data.length - 1] += views;
     }
 
-    renderBarChart(labels.reverse(), data.reverse(), hourView[fromTimeState][0]);
+    renderBarChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
   week: function(hourIdx) {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24 * 7 * 8; idx++) {
-      if (hourView[hourIdx + idx] === undefined) {
+      if (hourViews[hourIdx + idx] === undefined) {
         backwardTimeBtn.classList.add('change_time_btn-prohibit');
         break;
       }
-      let [timeStamp, views] = hourView[hourIdx + idx];
+      let [timeStamp, views] = hourViews[hourIdx + idx];
       if (idx % (24 * 7) === 0) {
         let label =
           `${timeStamp.addTime('Date', -6).getMonth() + 1}/${timeStamp
@@ -176,34 +155,34 @@ const renderHandler = {
       data[data.length - 1] += views;
     }
 
-    renderBarChart(labels.reverse(), data.reverse(), hourView[fromTimeState][0]);
+    renderBarChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
   month: function(hourIdx) {
     let labels = [];
     let data = [];
-    let curTime = hourView[hourIdx][0];
+    let curTime = hourViews[hourIdx][0];
 
     for (let idx = 0; idx < 6; idx++) {
       let label = `${curTime}`.split(' ')[1];
       labels.push(label);
-      data.push(monthView[NOW.year - curTime.getFullYear()][curTime.getMonth()]);
+      data.push(monthViews[NOW.year - curTime.getFullYear()][curTime.getMonth()]);
       curTime = curTime.addTime('Month', -1);
     }
 
-    renderBarChart(labels.reverse(), data.reverse(), hourView[fromTimeState][0]);
+    renderBarChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
   year: function(hourIdx) {
     let labels = [];
     let data = [];
-    let curTime = hourView[hourIdx][0];
+    let curTime = hourViews[hourIdx][0];
     for (let idx = 0; idx < 3; idx++) {
       let label = `${curTime}`.split(' ')[3];
       labels.push(label);
-      data.push(monthView[NOW.year - curTime.getFullYear()].reduce((acc, cur) => acc + cur));
+      data.push(monthViews[NOW.year - curTime.getFullYear()].reduce((acc, cur) => acc + cur));
       curTime = curTime.addTime('FullYear', -1);
     }
 
-    renderBarChart(labels.reverse(), data.reverse(), hourView[fromTimeState][0]);
+    renderBarChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
 };
 const ctx = document.getElementById('hourStatsChart').getContext('2d');
@@ -280,57 +259,56 @@ function renderBarChart(labels, data, timeStamp) {
 }
 
 function init() {
-  let sumByHour = [...Array(24)].fill(0);
-  let sumByDay = [...Array(7)].fill(0);
-
-  fetchStoriesHourStats(NOW.epoch);
-  function fetchStoriesHourStats(fromTime) {
-    if (tryFinishFetchCounter > 1) {
+  fetchStoriesStatsByMonth(NOW.epoch, 0);
+  function fetchStoriesStatsByMonth(fromTime, monthIdx) {
+    if (zeroViewCounter > 3 || monthIdx === NUMBER_OF_MONTH_FETCHED - 1) {
       isFinishFetch = true;
       return;
-    }
-    for (let idx = 0; idx < numOfMonthFetched; idx++) {
-      if (!fetchReadyState[idx] && fromTime < new Date(NOW.year, NOW.month - idx, NOW.date)) {
-        fetchReadyState[idx] = true;
-        if (idx === 0) renderHandler['day'](0);
-        if (idx === numOfMonthFetched - 1) {
-          isFinishFetch = true;
-          return;
-        }
-      }
     }
 
     const year = fromTime.getFullYear();
     const month = fromTime.getMonth();
     const date = fromTime.getDate();
     const toTime = new Date(year, month - 1, date);
-    const fetchUrl = `https://medium.com/me/stats/total/${toTime.getTime()}/${fromTime.getTime()}`;
 
-    fetch(fetchUrl)
+    fetch(MEDIUM_HOURLY_STATS_URL(toTime, fromTime))
       .then(function(response) {
         return response.text();
       })
       .then(function(textRes) {
         const data = JSON.parse(textRes.split('</x>')[1]);
-        const { value: notiRawData } = data.payload;
-        let curHourView = [];
+        const { value: rawData } = data.payload;
+        let curHourViews = [];
         let isZeroView = true;
-        notiRawData.forEach((notiItem) => {
-          if (notiItem.views > 0) isZeroView = false;
+
+        rawData.forEach((notiItem) => {
+          if (notiItem.views > 0 && isZeroView) isZeroView = false;
           let timeStamp = new Date(notiItem.timestampMs);
-          curHourView.push([timeStamp, notiItem.views]);
+          curHourViews.push([timeStamp, notiItem.views]);
           sumByHour[timeStamp.getHours()] += notiItem.views;
           sumByDay[timeStamp.getDay()] += notiItem.views;
-          monthView[NOW.year - timeStamp.getFullYear()][timeStamp.getMonth()] += notiItem.views;
+          monthViews[NOW.year - timeStamp.getFullYear()][timeStamp.getMonth()] += notiItem.views;
         });
-        if (isZeroView) tryFinishFetchCounter++;
-        if (hourView.length === 0) {
-          while (curHourView[curHourView.length - 1][0].getHours() !== 23) {
-            curHourView.push([curHourView[curHourView.length - 1][0].addTime('Hours', 1), 0]);
+
+        if (isZeroView) zeroViewCounter++;
+
+        if (monthIdx === 0) {
+          // Align the hourly data of the latest day to have 24 hours
+          while (curHourViews[curHourViews.length - 1][0].getHours() !== 23) {
+            curHourViews.push([curHourViews[curHourViews.length - 1][0].addTime('Hours', 1), 0]);
           }
         }
-        hourView.push(...curHourView.reverse());
-        fetchStoriesHourStats(toTime);
+
+        for (let idx = curHourViews.length - 1; idx >= 0; idx--) {
+          hourViews.push(curHourViews[idx]);
+        }
+
+        if (!fetchReadyState[monthIdx]) {
+          fetchReadyState[monthIdx] = true;
+          if (monthIdx === 0) renderHandler['day'](0);
+        }
+
+        fetchStoriesStatsByMonth(toTime, monthIdx + 1);
       })
       .catch(function(err) {
         console.error(err);
@@ -340,19 +318,8 @@ function init() {
 
 displaySummaryData();
 
-function numFormater(number) {
-  const SI_SYMBOL = ['', 'k', 'M', 'G', 'T', 'P', 'E'];
-
-  let tier = (Math.log10(number) / 3) | 0;
-  if (tier == 0) return number;
-  let suffix = SI_SYMBOL[tier];
-  let scale = Math.pow(10, tier * 3);
-  let scaled = number / scale;
-  return scaled.toFixed(1) + suffix;
-}
-
 function displaySummaryData() {
-  fetch('https://medium.com/me/stats?format=json&limit=100000')
+  fetch(MEDIUM_SUMMARY_STATS_URL)
     .then(function(response) {
       return response.text();
     })
@@ -442,12 +409,13 @@ function handleDownload() {
     }
   }, 100);
 }
+
 function exportToCsv() {
   let content = [['Year', 'Month', 'Day', 'Views']];
   let curDateViews = 0;
-  let curDateKey = getDateKeyFromEpoch(new Date(hourView[0]));
-  for (let idx = 0; idx < hourView.length; idx++) {
-    const [timestamp, views] = hourView[idx];
+  let curDateKey = getDateKeyFromEpoch(new Date(hourViews[0]));
+  for (let idx = 0; idx < hourViews.length; idx++) {
+    const [timestamp, views] = hourViews[idx];
     const tmpDateKey = getDateKeyFromEpoch(new Date(timestamp));
     if (curDateKey !== tmpDateKey) {
       content.push([
@@ -477,8 +445,6 @@ function exportToCsv() {
 
     finalVal += '\n';
   }
-
-  console.log(finalVal);
 
   download_btn_wrap.setAttribute(
     'href',
