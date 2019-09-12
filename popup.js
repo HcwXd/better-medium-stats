@@ -113,7 +113,7 @@ function displaySummaryData() {
 
     document.querySelector('.summary_table').innerHTML = html;
     if (isReadyToRender) {
-      document.querySelector('#table_loader').style.display = 'none';
+      document.querySelector('#summary_loader').style.display = 'none';
       document.querySelector('.summary_wrap').style.display = 'flex';
     } else {
       isReadyToRender = true;
@@ -313,7 +313,7 @@ let chart;
 
 function renderBarChart(labels, data, timeStamp) {
   document.getElementById('hourStatsChart').style.display = 'block';
-  document.querySelector('#hourStats_loader').style.display = 'none';
+  document.querySelector('#views_loader').style.display = 'none';
   if (chart) {
     chart.data.datasets[0].data = data;
     chart.data.labels = labels;
@@ -394,7 +394,7 @@ const renderViewsMetrics = () => {
   document.querySelector('.week_views').innerHTML = numFormater(weekSum);
   document.querySelector('.month_views').innerHTML = numFormater(monthSum);
   if (isReadyToRender) {
-    document.querySelector('#table_loader').style.display = 'none';
+    document.querySelector('#summary_loader').style.display = 'none';
     document.querySelector('.summary_wrap').style.display = 'flex';
   } else {
     isReadyToRender = true;

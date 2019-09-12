@@ -104,7 +104,7 @@ body {
         background-color: #f6f6f6; }
     #views_container .time_format_btn_wrap .time_format_btn-select {
       background-color: #6eb799;
-      border-color: #6eb799;
+      border-color: #6eb799 !important;
       color: white;
       cursor: default; }
       #views_container .time_format_btn_wrap .time_format_btn-select:hover {
