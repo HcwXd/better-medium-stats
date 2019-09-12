@@ -72,6 +72,7 @@ function forwardTimeHandler() {
 
 function backwardTimeHandler() {
   if (this.classList.contains('change_time_btn-prohibit')) return;
+  let oldFromTimeState = fromTimeState;
 
   if (timeFormatState === 'hour') {
     fromTimeState += 24;
@@ -84,12 +85,12 @@ function backwardTimeHandler() {
   } else if (timeFormatState === 'year') {
     fromTimeState += 24 * 30 * 12;
   }
-  if (fromTimeState > 0) {
+  if (fromTimeState > 0 && forwardTimeBtn.classList.contains('change_time_btn-prohibit')) {
     forwardTimeBtn.classList.remove('change_time_btn-prohibit');
   }
-  if (hourViews[fromTimeState] === undefined) {
+  if (hourViews[fromTimeState] === undefined && hourViews[oldFromTimeState + 1] !== undefined) {
     backwardTimeBtn.classList.add('change_time_btn-prohibit');
-    return;
+    fromTimeState = hourViews.length - 1;
   }
   renderHandler[timeFormatState](fromTimeState);
 }
@@ -260,6 +261,7 @@ function renderBarChart(labels, data, timeStamp) {
 
 function init() {
   fetchStoriesStatsByMonth(NOW.epoch, 0);
+  let lastTimeStamp;
   function fetchStoriesStatsByMonth(fromTime, monthIdx) {
     if (zeroViewCounter > 3 || monthIdx === NUMBER_OF_MONTH_FETCHED - 1) {
       isFinishFetch = true;
@@ -278,30 +280,36 @@ function init() {
       .then(function(textRes) {
         const data = JSON.parse(textRes.split('</x>')[1]);
         const { value: rawData } = data.payload;
-        let curHourViews = [];
         let isZeroView = true;
 
-        rawData.forEach((notiItem) => {
-          if (notiItem.views > 0 && isZeroView) isZeroView = false;
-          let timeStamp = new Date(notiItem.timestampMs);
-          curHourViews.push([timeStamp, notiItem.views]);
-          sumByHour[timeStamp.getHours()] += notiItem.views;
-          sumByDay[timeStamp.getDay()] += notiItem.views;
-          monthViews[NOW.year - timeStamp.getFullYear()][timeStamp.getMonth()] += notiItem.views;
-        });
+        for (let idx = rawData.length - 1; idx >= 0; idx--) {
+          let hourlyData = rawData[idx];
+          if (hourlyData.views > 0 && isZeroView) isZeroView = false;
+          let timeStamp = new Date(hourlyData.timestampMs);
+
+          // Fill the gap btw two timestamps to ensure data continuity
+          while (lastTimeStamp && getHourDiff(timeStamp, lastTimeStamp) > 1) {
+            lastTimeStamp = lastTimeStamp.addTime('Hours', -1);
+            hourViews.push([lastTimeStamp, 0]);
+          }
+
+          hourViews.push([timeStamp, hourlyData.views]);
+
+          // Align the hourly data of the latest day to have 24 hours
+          if (hourViews.length === 1) {
+            while (hourViews[hourViews.length - 1][0].getHours() !== 23) {
+              hourViews.push([hourViews[hourViews.length - 1][0].addTime('Hours', 1), 0]);
+            }
+            hourViews.reverse();
+          }
+
+          sumByHour[timeStamp.getHours()] += hourlyData.views;
+          sumByDay[timeStamp.getDay()] += hourlyData.views;
+          monthViews[NOW.year - timeStamp.getFullYear()][timeStamp.getMonth()] += hourlyData.views;
+          lastTimeStamp = timeStamp;
+        }
 
         if (isZeroView) zeroViewCounter++;
-
-        if (monthIdx === 0) {
-          // Align the hourly data of the latest day to have 24 hours
-          while (curHourViews[curHourViews.length - 1][0].getHours() !== 23) {
-            curHourViews.push([curHourViews[curHourViews.length - 1][0].addTime('Hours', 1), 0]);
-          }
-        }
-
-        for (let idx = curHourViews.length - 1; idx >= 0; idx--) {
-          hourViews.push(curHourViews[idx]);
-        }
 
         if (!fetchReadyState[monthIdx]) {
           fetchReadyState[monthIdx] = true;

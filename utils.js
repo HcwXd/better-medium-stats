@@ -17,6 +17,19 @@ const getDetailedDateLabelFromEpoch = (date) =>
 
 const getDateLabelFromDateKey = (key) => `${Math.floor((key % 10000) / 100)}/${key % 100}`;
 
+const getMonthDiff = (olderTime, newerTime) => {
+  return (
+    newerTime.getMonth() -
+    olderTime.getMonth() +
+    1 +
+    12 * (newerTime.getFullYear() - olderTime.getFullYear())
+  );
+};
+
+const getHourDiff = (olderTime, newerTime) => {
+  return Math.abs(newerTime - olderTime) / 36e5;
+};
+
 Date.prototype.addTime = function(timeType, timeOffset) {
   let result = new Date(this);
   result[`set${timeType}`](result[`get${timeType}`]() + timeOffset);
@@ -25,4 +38,9 @@ Date.prototype.addTime = function(timeType, timeOffset) {
 
 Date.prototype.daysInThisMonth = function() {
   return new Date(this.getFullYear(), this.getMonth() + 1, 0).getDate();
+};
+
+Date.prototype.getWeek = function() {
+  var firstDay = new Date(this.getFullYear(), 0, 1);
+  return Math.ceil(((this - firstDay) / 86400000 + firstDay.getDay() + 1) / 7) - 1;
 };
