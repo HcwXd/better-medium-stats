@@ -1,6 +1,7 @@
 * {
   box-sizing: border-box;
-  color: rgba(0, 0, 0, 0.8); }
+  color: rgba(0, 0, 0, 0.6);
+  font-family: "Chivo", sans-serif; }
 
 body {
   margin: 0px;
@@ -11,47 +12,172 @@ body {
 .title_wrap {
   padding: 25px 15px 15px 25px;
   display: flex;
-  justify-content: space-between;
-  font-size: 6px;
-  color: black; }
+  justify-content: space-between; }
   .title_wrap .title {
-    font-size: 20px;
-    font-family: "Cutive Mono", monospace;
-    color: black; }
+    font-size: 20px; }
 
-table {
-  border-spacing: 1;
-  border-collapse: collapse;
-  border-radius: 4px;
-  text-align: right;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  font-size: 14px; }
-  table td, table th {
-    padding: 10px; }
-  table thead tr {
-    padding: 10px;
-    background: #6eb799; }
-  table tbody tr:first-child {
-    border-bottom: 1px solid #e3f1d5; }
-  table thead tr th:nth-child(1), table tbody tr td:nth-child(1) {
-    text-align: left;
-    border-right: 1px solid #e3f1d5; }
-  table thead tr th:first-child {
+.nav_bar_wrap {
+  display: flex;
+  padding-left: 15px;
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 5px; }
+  .nav_bar_wrap .nav_item {
+    border: 1px solid #ffffff;
+    padding: 8px 16px;
+    color: #6eb799;
+    cursor: pointer;
+    border-top-right-radius: 4px;
     border-top-left-radius: 4px; }
-  table thead tr th:last-child {
-    border-top-right-radius: 4px; }
+    .nav_bar_wrap .nav_item:hover {
+      border: 1px solid rgba(222, 226, 230, 0.7);
+      border-bottom: 1px solid #ffffff; }
+  .nav_bar_wrap .nav_item-active {
+    border: 1px solid #dee2e6;
+    border-bottom: 1px solid #ffffff;
+    margin-bottom: -1px; }
+    .nav_bar_wrap .nav_item-active:hover {
+      border: 1px solid #dee2e6;
+      border-bottom: 1px solid #ffffff;
+      margin-bottom: -1px; }
+
+#summary_container {
+  display: flex; }
+  #summary_container .summary_wrap {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%; }
+    #summary_container .summary_wrap .metric_row {
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-bottom: 30px; }
+      #summary_container .summary_wrap .metric_row .metric_wrap {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center; }
+        #summary_container .summary_wrap .metric_row .metric_wrap .metric_value {
+          font-size: 32px;
+          font-weight: 700;
+          color: #50a280; }
+  #summary_container table {
+    border-spacing: 1;
+    border-collapse: collapse;
+    border-radius: 4px;
+    text-align: right;
+    font-size: 14px; }
+    #summary_container table td, #summary_container table th {
+      padding: 10px 7px;
+      font-weight: normal; }
+    #summary_container table thead tr {
+      padding: 10px 7px;
+      border-bottom: 1px solid #dee2e6; }
+    #summary_container table thead tr th:first-child {
+      border-top-left-radius: 4px; }
+    #summary_container table thead tr th:last-child {
+      border-top-right-radius: 4px; }
+
+#views_container {
+  display: none; }
+  #views_container #hourStatsChart {
+    display: none; }
+  #views_container .time_format_btn_wrap {
+    margin-bottom: 15px;
+    display: flex; }
+    #views_container .time_format_btn_wrap .time_format_btn {
+      padding: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      border-right: none;
+      color: rgba(0, 0, 0, 0.7);
+      cursor: pointer; }
+      #views_container .time_format_btn_wrap .time_format_btn:first-child {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px; }
+      #views_container .time_format_btn_wrap .time_format_btn:last-child {
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+        border-right: 1px solid rgba(0, 0, 0, 0.3); }
+      #views_container .time_format_btn_wrap .time_format_btn:hover {
+        background-color: #f6f6f6; }
+    #views_container .time_format_btn_wrap .time_format_btn-select {
+      background-color: #6eb799;
+      border-color: #6eb799;
+      color: white;
+      cursor: default; }
+      #views_container .time_format_btn_wrap .time_format_btn-select:hover {
+        background-color: #6eb799; }
+  #views_container .change_time_btn_wrap {
+    margin-top: 15px;
+    display: flex;
+    position: relative; }
+    #views_container .change_time_btn_wrap .download_btn_wrap {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 150%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center; }
+      #views_container .change_time_btn_wrap .download_btn_wrap .download_loader {
+        display: none;
+        transition: all 0.7s ease-in-out;
+        border: 5px solid #ebebeb;
+        border-bottom-color: #26B8BF;
+        width: 20px;
+        height: 20px;
+        border-radius: 100%;
+        animation: spin 1s linear infinite; }
+      #views_container .change_time_btn_wrap .download_btn_wrap .feather-download {
+        cursor: pointer; }
+      #views_container .change_time_btn_wrap .download_btn_wrap .feather-download-ready {
+        stroke: #6eb799; }
+    #views_container .change_time_btn_wrap .change_time_btn {
+      padding: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      color: rgba(0, 0, 0, 0.7);
+      cursor: pointer;
+      border-right: none; }
+      #views_container .change_time_btn_wrap .change_time_btn:hover {
+        background-color: #f6f6f6; }
+    #views_container .change_time_btn_wrap .backward_time_btn {
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px; }
+    #views_container .change_time_btn_wrap .forward_time_btn {
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+      border-right: 1px solid rgba(0, 0, 0, 0.3); }
+    #views_container .change_time_btn_wrap .change_time_btn-prohibit {
+      opacity: 0.7;
+      cursor: default; }
+      #views_container .change_time_btn_wrap .change_time_btn-prohibit:hover {
+        background-color: white; }
+  #views_container .download_wording {
+    font-size: 10px;
+    line-height: 12px;
+    width: 400px;
+    height: 0px;
+    display: block;
+    opacity: 0;
+    text-align: center;
+    transition-duration: 700ms; }
+  #views_container .download_wording-show {
+    opacity: 1;
+    padding: 12px;
+    margin-top: 10px;
+    height: initial; }
 
 .container {
-  width: 400px;
-  border-top: 1px solid #a9a9b3;
+  min-width: 500px;
   padding: 25px;
   align-items: center;
   justify-content: space-around;
   display: flex;
   flex-direction: column;
   font-size: 14px;
-  transition-duration: 1s;
-  font-family: "Cutive Mono", monospace; }
+  transition-duration: 1s; }
   .container .loader span {
     display: inline-block;
     width: 5px;
@@ -65,96 +191,10 @@ table {
       animation: grow 1s ease-in-out 0.3s infinite; }
     .container .loader span:nth-child(4) {
       animation: grow 1s ease-in-out 0.45s infinite; }
-  .container #hourStatsChart {
-    display: none; }
-  .container .time_format_btn_wrap {
-    margin-bottom: 15px;
-    display: flex; }
-    .container .time_format_btn_wrap .time_format_btn {
-      padding: 10px;
-      border: 1px solid rgba(0, 0, 0, 0.3);
-      border-right: none;
-      color: rgba(0, 0, 0, 0.7);
-      cursor: pointer; }
-      .container .time_format_btn_wrap .time_format_btn:first-child {
-        border-top-left-radius: 4px;
-        border-bottom-left-radius: 4px; }
-      .container .time_format_btn_wrap .time_format_btn:last-child {
-        border-top-right-radius: 4px;
-        border-bottom-right-radius: 4px;
-        border-right: 1px solid rgba(0, 0, 0, 0.3); }
-      .container .time_format_btn_wrap .time_format_btn:hover {
-        background-color: #f6f6f6; }
-    .container .time_format_btn_wrap .time_format_btn-select {
-      background-color: #6eb799;
-      border-color: #6eb799;
-      color: white;
-      cursor: default; }
-      .container .time_format_btn_wrap .time_format_btn-select:hover {
-        background-color: #6eb799; }
-  .container .change_time_btn_wrap {
-    margin-top: 15px;
-    display: flex;
-    position: relative; }
-    .container .change_time_btn_wrap .download_btn_wrap {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      left: 150%;
-      display: flex;
-      justify-content: space-around;
-      align-items: center; }
-      .container .change_time_btn_wrap .download_btn_wrap .download_loader {
-        display: none;
-        transition: all 0.7s ease-in-out;
-        border: 5px solid #ebebeb;
-        border-bottom-color: #26B8BF;
-        width: 20px;
-        height: 20px;
-        border-radius: 100%;
-        animation: spin 1s linear infinite; }
-      .container .change_time_btn_wrap .download_btn_wrap .feather-download {
-        cursor: pointer; }
-      .container .change_time_btn_wrap .download_btn_wrap .feather-download-ready {
-        stroke: #6eb799; }
-    .container .change_time_btn_wrap .change_time_btn {
-      padding: 10px;
-      border: 1px solid rgba(0, 0, 0, 0.3);
-      color: rgba(0, 0, 0, 0.7);
-      cursor: pointer;
-      border-right: none; }
-      .container .change_time_btn_wrap .change_time_btn:hover {
-        background-color: #f6f6f6; }
-    .container .change_time_btn_wrap .backward_time_btn {
-      border-top-left-radius: 4px;
-      border-bottom-left-radius: 4px; }
-    .container .change_time_btn_wrap .forward_time_btn {
-      border-top-right-radius: 4px;
-      border-bottom-right-radius: 4px;
-      border-right: 1px solid rgba(0, 0, 0, 0.3); }
-    .container .change_time_btn_wrap .change_time_btn-prohibit {
-      opacity: 0.7;
-      cursor: default; }
-      .container .change_time_btn_wrap .change_time_btn-prohibit:hover {
-        background-color: white; }
-  .container .download_wording {
-    font-size: 10px;
-    line-height: 12px;
-    width: 400px;
-    height: 0px;
-    display: block;
-    opacity: 0;
-    text-align: center;
-    transition-duration: 700ms; }
-  .container .download_wording-show {
-    opacity: 1;
-    padding: 12px;
-    margin-top: 10px;
-    height: initial; }
 
 .footer {
   padding: 10px 25px 10px 25px;
-  border-top: 1px solid #a9a9b3;
+  border-top: 1px solid #dee2e6;
   display: flex;
   justify-content: space-between;
   align-items: center; }

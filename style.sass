@@ -1,9 +1,15 @@
+$medium-green: #6eb799
+$hover-grey: rgb(246, 246, 246)
+$border-gray: #dee2e6
+$left-padding: 15px
+$black: rgba(0,0,0,0.6)
+$bg-white: #ffffff
 *
   // border: 1px solid black
   box-sizing: border-box
-  color: rgba(#000, 0.8)
-$medium-green: #6eb799
-$hover-grey: rgb(246, 246, 246)
+  color: $black
+  font-family: 'Chivo', sans-serif
+
 body
   margin: 0px
   padding: 0px
@@ -14,62 +20,76 @@ body
   padding: 25px 15px 15px 25px
   display: flex
   justify-content: space-between
-  font-size: 6px
-  color: black
   .title
     font-size: 20px
-    font-family: 'Cutive Mono', monospace
-    color: rgba(#000, 1)
 
-table
-  border-spacing: 1
-  border-collapse: collapse
-  border-radius: 4px
-  text-align: right
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1)
-  font-size: 14px
-  // border-bottom: 1px solid #e3f1d5
-  td, th
-    padding: 10px
-  thead tr
-    padding: 10px
-    background: rgb(110, 183, 153)
- 
-  tbody tr:first-child
-    border-bottom: 1px solid #e3f1d5
-  thead tr th:nth-child(1), tbody tr td:nth-child(1)
-    text-align: left
-    border-right: 1px solid #e3f1d5
-  thead tr th:first-child
-    border-top-left-radius: 4px
-  thead tr th:last-child
-    border-top-right-radius: 4px
-
-.container
-  width: 400px
-  border-top: 1px solid rgb(169, 169, 179)
-  padding: 25px
-  align-items: center
-  justify-content: space-around
+.nav_bar_wrap
   display: flex
-  flex-direction: column
-  font-size: 14px
-  transition-duration: 1s
-  font-family: 'Cutive Mono', monospace
-  .loader
-    span
-      display: inline-block
-      width: 5px
-      height: 20px
-      background-color: rgb(110, 183, 153)
-      &:nth-child(1)
-        animation: grow 1s ease-in-out infinite
-      &:nth-child(2)
-        animation: grow 1s ease-in-out 0.15s infinite
-      &:nth-child(3)
-        animation: grow 1s ease-in-out 0.3s infinite
-      &:nth-child(4)
-        animation: grow 1s ease-in-out 0.45s infinite
+  padding-left: $left-padding
+  border-bottom: 1px solid $border-gray
+  margin-bottom: 5px
+  .nav_item
+    border: 1px solid $bg-white
+    padding: 8px 16px
+    color: $medium-green
+    cursor: pointer
+    border-top-right-radius: 4px
+    border-top-left-radius: 4px
+    &:hover
+      border: 1px solid rgba($border-gray, 0.7)
+      border-bottom: 1px solid $bg-white
+  .nav_item-active
+    border: 1px solid $border-gray
+    border-bottom: 1px solid $bg-white
+    margin-bottom: -1px
+    &:hover
+      border: 1px solid $border-gray
+      border-bottom: 1px solid $bg-white
+      margin-bottom: -1px
+
+#summary_container
+  display: flex
+  .summary_wrap
+    display: none
+    flex-direction: column
+    align-items: center
+    justify-content: space-around
+    width: 100%
+    .metric_row
+      width: 100%
+      display: flex
+      justify-content: space-around
+      align-items: center
+      margin-bottom: 30px
+      .metric_wrap
+        display: flex
+        flex-direction: column
+        justify-content: space-around
+        align-items: center
+        .metric_label
+        .metric_value
+          font-size: 32px
+          font-weight: 700
+          color: darken($medium-green, 10%)
+  table
+    border-spacing: 1
+    border-collapse: collapse
+    border-radius: 4px
+    text-align: right
+    font-size: 14px
+    td, th
+      padding: 10px 7px
+      font-weight: normal
+    thead tr
+      padding: 10px 7px
+      border-bottom: 1px solid $border-gray
+    thead tr th:first-child
+      border-top-left-radius: 4px
+    thead tr th:last-child
+      border-top-right-radius: 4px
+
+#views_container
+  display: none
   #hourStatsChart
     display: none
   .time_format_btn_wrap
@@ -151,15 +171,39 @@ table
     opacity: 0
     text-align: center
     transition-duration: 700ms
-    // box-shadow: 0 0 5px rgba(0, 0, 0, 0.1)
   .download_wording-show
     opacity: 1
     padding: 12px
     margin-top: 10px
     height: initial 
+
+.container
+  min-width: 500px
+  padding: 25px
+  align-items: center
+  justify-content: space-around
+  display: flex
+  flex-direction: column
+  font-size: 14px
+  transition-duration: 1s
+  .loader
+    span
+      display: inline-block
+      width: 5px
+      height: 20px
+      background-color: rgb(110, 183, 153)
+      &:nth-child(1)
+        animation: grow 1s ease-in-out infinite
+      &:nth-child(2)
+        animation: grow 1s ease-in-out 0.15s infinite
+      &:nth-child(3)
+        animation: grow 1s ease-in-out 0.3s infinite
+      &:nth-child(4)
+        animation: grow 1s ease-in-out 0.45s infinite
+  
 .footer
   padding: 10px 25px 10px 25px
-  border-top: 1px solid rgb(169, 169, 179)
+  border-top: 1px solid $border-gray
   display: flex
   justify-content: space-between
   align-items: center
@@ -169,7 +213,6 @@ table
       margin-right: 0px
   .version
     color: rgb(169, 169, 179)
-
 
 @keyframes grow
   0%,

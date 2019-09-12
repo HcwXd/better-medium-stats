@@ -1,5 +1,126 @@
 'use strict';
 
+let isReadyToRender = false;
+
+const nav_items = document.querySelectorAll('.nav_item');
+nav_items.forEach((el) => el.addEventListener('click', handleChangeTab));
+
+function handleChangeTab(e) {
+  nav_items.forEach((el) => {
+    if (el.dataset.name !== this.dataset.name) {
+      el.classList.remove('nav_item-active');
+      document.querySelector(`#${el.dataset.name}_container`).style.display = 'none';
+    } else {
+      el.classList.add('nav_item-active');
+      document.querySelector(`#${el.dataset.name}_container`).style.display = 'flex';
+    }
+  });
+}
+
+displaySummaryData();
+
+function displaySummaryData() {
+  /**
+   * 1. Total Views
+   * 2. Total Followers
+   * 3. Last 24 hours / 7 days / 30 days views
+   * 4. General Table
+   */
+
+  fetch(MEDIUM_SUMMARY_STATS_URL)
+    .then((response) => response.text())
+    .then((response) => {
+      const data = JSON.parse(response.split('</x>')[1]);
+      const storyRawData = data && data.payload && data.payload.value;
+      const users =
+        (data && data.payload && data.payload.references && data.payload.references.User) || {};
+      const { username } = Object.values(users)[0] || {};
+
+      return fetch(MEDIUM_FOLLOWERS_STATS_URL(username))
+        .then((response) => response.text())
+        .then((response) => {
+          const data = JSON.parse(response.split('</x>')[1]);
+          const followersRawData = data.payload;
+          return {
+            storyRawData,
+            followersRawData,
+          };
+        });
+    })
+    .then(({ storyRawData, followersRawData }) => {
+      const storyData = {
+        totalViews: getTotal(storyRawData, 'views'),
+        totalReads: getTotal(storyRawData, 'reads'),
+        totalClaps: getTotal(storyRawData, 'claps'),
+        totalUpvotes: getTotal(storyRawData, 'upvotes'),
+        totalStories: storyRawData.length,
+      };
+      const followerCount = (Object.values(followersRawData.references.SocialStats)[0] || {})
+        .usersFollowedByCount;
+
+      renderStoryData({ followerCount, ...storyData });
+    })
+    .catch(function(err) {
+      console.error(err);
+      const errorMsg = `<div class="label">Please log in to your Medium account :)<div>`;
+      document.querySelector('#summary_container').innerHTML = errorMsg;
+    });
+
+  function getTotal(arr, type) {
+    return arr.reduce((sum, el) => {
+      return sum + el[type];
+    }, 0);
+  }
+
+  function renderStoryData({
+    followerCount,
+    totalViews,
+    totalReads,
+    totalClaps,
+    totalUpvotes,
+    totalStories,
+  }) {
+    document.querySelector('.total_views').innerHTML = totalViews.toLocaleString();
+    document.querySelector('.total_followers').innerHTML = followerCount.toLocaleString();
+
+    const html = `<table>
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Stories</th>
+                          <th>Views</th>
+                          <th>Reads</th>
+                          <th>R/V</th>
+                          <th>Claps</th>
+                          <th>Fans</th>
+                          <th>C/F</th>
+                        </tr>
+                      <thead>
+                      <tbody>
+                        <tr>
+                          <td>Total</td>
+                          <td>${numFormater(totalStories)}</td>
+                          <td>${numFormater(totalViews)}</td>
+                          <td>${numFormater(totalReads)}</td>
+                          <td>${(totalReads / totalViews).toFixed(2) * 100}%</td>
+                          <td>${numFormater(totalClaps)}</td>
+                          <td>${numFormater(totalUpvotes)}</td>
+                          <td>${numFormater((totalClaps / totalUpvotes).toFixed(1))}</td>
+                        </tr>
+                      </tbody>
+                    <table/>
+                  `;
+
+    document.querySelector('.summary_table').innerHTML = html;
+    if (isReadyToRender) {
+      document.querySelector('#table_loader').style.display = 'none';
+      document.querySelector('.summary_wrap').style.display = 'flex';
+    } else {
+      isReadyToRender = true;
+    }
+  }
+}
+
 const fetchReadyState = Array(NUMBER_OF_MONTH_FETCHED).fill(false);
 const hourViews = [];
 const monthViews = [...Array(NUMBER_OF_MONTH_FETCHED / 12 + 1)].map(() =>
@@ -12,6 +133,7 @@ let timeFormatState = 'day';
 let fromTimeState = 0;
 let isFinishFetch = false;
 let zeroViewCounter = 0;
+let alignHourOffset = 0;
 
 const timeFormatBtnWrap = document.querySelector('.time_format_btn_wrap');
 timeFormatBtnWrap.addEventListener('click', function(e) {
@@ -259,6 +381,26 @@ function renderBarChart(labels, data, timeStamp) {
   });
 }
 
+const renderViewsMetrics = () => {
+  let daySum;
+  let weekSum;
+  let monthSum = 0;
+  for (let idx = 0; idx < 24 * 30; idx++) {
+    monthSum += hourViews[alignHourOffset + idx][1];
+    if (idx === 24) daySum = monthSum;
+    if (idx === 24 * 7) weekSum = monthSum;
+  }
+  document.querySelector('.day_views').innerHTML = numFormater(daySum);
+  document.querySelector('.week_views').innerHTML = numFormater(weekSum);
+  document.querySelector('.month_views').innerHTML = numFormater(monthSum);
+  if (isReadyToRender) {
+    document.querySelector('#table_loader').style.display = 'none';
+    document.querySelector('.summary_wrap').style.display = 'flex';
+  } else {
+    isReadyToRender = true;
+  }
+};
+
 function init() {
   fetchStoriesStatsByMonth(NOW.epoch, 0);
   let lastTimeStamp;
@@ -299,8 +441,12 @@ function init() {
           if (hourViews.length === 1) {
             while (hourViews[hourViews.length - 1][0].getHours() !== 23) {
               hourViews.push([hourViews[hourViews.length - 1][0].addTime('Hours', 1), 0]);
+              alignHourOffset++;
             }
             hourViews.reverse();
+          }
+          if (hourViews.length - alignHourOffset === 24 * 30) {
+            renderViewsMetrics(alignHourOffset);
           }
 
           sumByHour[timeStamp.getHours()] += hourlyData.views;
@@ -321,73 +467,6 @@ function init() {
       .catch(function(err) {
         console.error(err);
       });
-  }
-}
-
-displaySummaryData();
-
-function displaySummaryData() {
-  fetch(MEDIUM_SUMMARY_STATS_URL)
-    .then(function(response) {
-      return response.text();
-    })
-    .then(function(textRes) {
-      const data = JSON.parse(textRes.split('</x>')[1]);
-      const storyRawData = data.payload.value;
-      const storyData = {
-        totalViews: getTotal(storyRawData, 'views'),
-        totalReads: getTotal(storyRawData, 'reads'),
-        totalClaps: getTotal(storyRawData, 'claps'),
-        totalUpvotes: getTotal(storyRawData, 'upvotes'),
-        totalStories: storyRawData.length,
-      };
-      renderStoryData(storyData);
-    })
-    .catch(function(err) {
-      console.error(err);
-      const errorMsg = `<div class="label">Please log in to your Medium account :)<div>`;
-      document.querySelector('#table_container').innerHTML = errorMsg;
-    });
-
-  function getTotal(arr, type) {
-    return arr.reduce((sum, el) => {
-      return sum + el[type];
-    }, 0);
-  }
-
-  function renderStoryData({ totalViews, totalReads, totalClaps, totalUpvotes, totalStories }) {
-    document.querySelector('#table_loader').style.display = 'none';
-    const html = `
-                  <table>
-                      <thead>
-                        <tr>
-                          <th>Types</th>
-                          <th>Views</th>
-                          <th>Reads</th>
-                          <th>Claps</th>
-                          <th>Fans</th>
-                        </tr>
-                      <thead>
-                      <tbody>
-                        <tr>
-                          <td>Total</td>
-                          <td>${numFormater(totalViews)}</td>
-                          <td>${numFormater(totalReads)}</td>
-                          <td>${numFormater(totalClaps)}</td>
-                          <td>${numFormater(totalUpvotes)}</td>
-                        </tr>
-                        <tr>
-                          <td>Average</td>
-                          <td>${numFormater(Math.floor(totalViews / totalStories))}</td>
-                          <td>${numFormater(Math.floor(totalReads / totalStories))}</td>
-                          <td>${numFormater(Math.floor(totalClaps / totalStories))}</td>
-                          <td>${numFormater(Math.floor(totalUpvotes / totalStories))}</td>
-                        </tr>
-                      </tbody>
-                    <table/>
-                  `;
-
-    document.querySelector('.container').innerHTML = html;
   }
 }
 
