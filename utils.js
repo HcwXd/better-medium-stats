@@ -1,6 +1,5 @@
 const numFormater = (number) => {
   const SI_SYMBOL = ['', 'k', 'M', 'G', 'T', 'P', 'E'];
-
   let tier = (Math.log10(number) / 3) | 0;
   if (tier == 0) return number;
   let suffix = SI_SYMBOL[tier];
@@ -33,6 +32,26 @@ const trimString = (str, length) => {
 const getHourDiff = (olderTime, newerTime) => {
   return Math.abs(newerTime - olderTime) / 36e5;
 };
+
+const toPercentage = (num, den) => `${(num / den).toFixed(2) * 100}%`;
+
+const getCsvString = (csvArray) => {
+  let csvString = '';
+  for (let i = 0; i < csvArray.length; i++) {
+    let value = csvArray[i];
+    for (let j = 0; j < value.length; j++) {
+      let innerValue = value[j] === null ? '' : value[j].toString();
+      let result = innerValue.replace(/"/g, '""');
+      if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"';
+      if (j > 0) csvString += ',';
+      csvString += result;
+    }
+    csvString += '\n';
+  }
+  return csvString;
+};
+
+const parseMediumResponse = (response) => JSON.parse(response.split('</x>')[1]);
 
 Date.prototype.addTime = function(timeType, timeOffset) {
   let result = new Date(this);

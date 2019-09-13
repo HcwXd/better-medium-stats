@@ -1,8 +1,5 @@
 'use strict';
-
-let isReadyToRender = false;
-let storiesData;
-
+/** Nav Bar */
 const nav_items = document.querySelectorAll('.nav_item');
 nav_items.forEach((el) => el.addEventListener('click', handleChangeTab));
 
@@ -18,20 +15,16 @@ function handleChangeTab() {
   });
 }
 
-displaySummaryData();
+/** Summary Page */
+let isReadyToRenderSummaryPage = false;
+let storiesData;
+displaySummaryPage();
 
-function displaySummaryData() {
-  /**
-   * 1. Total Views
-   * 2. Total Followers
-   * 3. Last 24 hours / 7 days / 30 days views
-   * 4. General Table
-   */
-
+function displaySummaryPage() {
   fetch(MEDIUM_SUMMARY_STATS_URL)
     .then((response) => response.text())
     .then((response) => {
-      const data = JSON.parse(response.split('</x>')[1]);
+      const data = parseMediumResponse(response);
       const storyRawData = data && data.payload && data.payload.value;
       const users =
         (data && data.payload && data.payload.references && data.payload.references.User) || {};
@@ -40,7 +33,7 @@ function displaySummaryData() {
       return fetch(MEDIUM_FOLLOWERS_STATS_URL(username))
         .then((response) => response.text())
         .then((response) => {
-          const data = JSON.parse(response.split('</x>')[1]);
+          const data = parseMediumResponse(response);
           const followersRawData = data.payload;
           return {
             storyRawData,
@@ -50,7 +43,7 @@ function displaySummaryData() {
     })
     .then(({ storyRawData, followersRawData }) => {
       storiesData = storyRawData.slice();
-      const storyData = {
+      const storyTableData = {
         totalViews: getTotal(storyRawData, 'views'),
         totalReads: getTotal(storyRawData, 'reads'),
         totalClaps: getTotal(storyRawData, 'claps'),
@@ -60,8 +53,7 @@ function displaySummaryData() {
       const followerCount = (Object.values(followersRawData.references.SocialStats)[0] || {})
         .usersFollowedByCount;
 
-      renderSummaryData({ followerCount, ...storyData });
-
+      renderSummaryData({ followerCount, ...storyTableData });
       renderStoryData();
     })
     .catch(function(err) {
@@ -110,7 +102,7 @@ function displaySummaryData() {
                           <td>${numFormater(totalStories)}</td>
                           <td>${numFormater(totalViews)}</td>
                           <td>${numFormater(totalReads)}</td>
-                          <td>${(totalReads / totalViews).toFixed(2) * 100}%</td>
+                          <td>${toPercentage(totalReads, totalViews)}</td>
                           <td>${numFormater(totalClaps)}</td>
                           <td>${numFormater(totalUpvotes)}</td>
                           <td>${numFormater((totalClaps / totalUpvotes).toFixed(1))}</td>
@@ -120,14 +112,16 @@ function displaySummaryData() {
                   `;
 
     document.querySelector('.summary_table').innerHTML = html;
-    if (isReadyToRender) {
+    if (isReadyToRenderSummaryPage) {
       document.querySelector('#summary_loader').style.display = 'none';
       document.querySelector('.summary_wrap').style.display = 'flex';
     } else {
-      isReadyToRender = true;
+      isReadyToRenderSummaryPage = true;
     }
   }
 }
+
+/** Views Page */
 
 const fetchReadyState = Array(NUMBER_OF_MONTH_FETCHED).fill(false);
 const hourViews = [];
@@ -225,9 +219,9 @@ function backwardTimeHandler() {
   renderHandler[timeFormatState](fromTimeState);
 }
 
-init();
+displayViewsPage();
 const renderHandler = {
-  hour: function(hourIdx) {
+  hour: (hourIdx) => {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24; idx++) {
@@ -242,9 +236,9 @@ const renderHandler = {
       data.push(views);
     }
 
-    renderBarChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
+    renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
-  day: function(hourIdx) {
+  day: (hourIdx) => {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24 * 7; idx++) {
@@ -261,9 +255,9 @@ const renderHandler = {
       data[data.length - 1] += views;
     }
 
-    renderBarChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
+    renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
-  week: function(hourIdx) {
+  week: (hourIdx) => {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24 * 7 * 8; idx++) {
@@ -286,9 +280,9 @@ const renderHandler = {
       data[data.length - 1] += views;
     }
 
-    renderBarChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
+    renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
-  month: function(hourIdx) {
+  month: (hourIdx) => {
     let labels = [];
     let data = [];
     let curTime = hourViews[hourIdx][0];
@@ -300,9 +294,9 @@ const renderHandler = {
       curTime = curTime.addTime('Month', -1);
     }
 
-    renderBarChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
+    renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
-  year: function(hourIdx) {
+  year: (hourIdx) => {
     let labels = [];
     let data = [];
     let curTime = hourViews[hourIdx][0];
@@ -313,13 +307,13 @@ const renderHandler = {
       curTime = curTime.addTime('FullYear', -1);
     }
 
-    renderBarChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
+    renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
 };
 const viewsCtx = document.getElementById('viewsChart').getContext('2d');
 let viewsChart;
 
-function renderBarChart(labels, data, timeStamp) {
+function renderViewsChart(labels, data, timeStamp) {
   document.getElementById('viewsChart').style.display = 'block';
   document.querySelector('#views_loader').style.display = 'none';
   if (viewsChart) {
@@ -355,12 +349,9 @@ function renderBarChart(labels, data, timeStamp) {
       tooltips: {
         displayColors: false,
         callbacks: {
-          title: function(tooltipItem, data) {
-            return data.labels[tooltipItem[0].index];
-          },
-          label: function(tooltipItem, data) {
-            return 'Views: ' + data.datasets[0].data[tooltipItem.index].toLocaleString();
-          },
+          title: (tooltipItem, data) => data.labels[tooltipItem[0].index],
+          label: (tooltipItem, data) =>
+            'Views: ' + data.datasets[0].data[tooltipItem.index].toLocaleString(),
         },
       },
 
@@ -368,9 +359,7 @@ function renderBarChart(labels, data, timeStamp) {
         xAxes: [
           {
             ticks: {
-              callback: function(t) {
-                return t.split(' - ')[0];
-              },
+              callback: (t) => t.split(' - ')[0],
             },
           },
         ],
@@ -378,9 +367,7 @@ function renderBarChart(labels, data, timeStamp) {
           {
             ticks: {
               beginAtZero: true,
-              callback: function(value) {
-                return value.toLocaleString();
-              },
+              callback: (value) => value.toLocaleString(),
             },
           },
         ],
@@ -388,6 +375,76 @@ function renderBarChart(labels, data, timeStamp) {
     },
   });
 }
+
+function displayViewsPage() {
+  fetchStoriesStatsByMonth(NOW.epoch, 0);
+  let lastTimeStamp;
+  function fetchStoriesStatsByMonth(fromTime, monthIdx) {
+    if (zeroViewCounter > 3 || monthIdx === NUMBER_OF_MONTH_FETCHED - 1) {
+      isFinishFetch = true;
+      handleViewsDownload();
+      return;
+    }
+
+    const year = fromTime.getFullYear();
+    const month = fromTime.getMonth();
+    const date = fromTime.getDate();
+    const toTime = new Date(year, month - 1, date);
+
+    fetch(MEDIUM_HOURLY_STATS_URL(toTime, fromTime))
+      .then((response) => response.text())
+      .then((response) => {
+        const data = parseMediumResponse(response);
+        const { value: rawData } = data.payload;
+        let isZeroView = true;
+
+        for (let idx = rawData.length - 1; idx >= 0; idx--) {
+          let hourlyData = rawData[idx];
+          if (hourlyData.views > 0 && isZeroView) isZeroView = false;
+          let timeStamp = new Date(hourlyData.timestampMs);
+
+          // Fill the gap btw two timestamps to ensure data continuity
+          while (lastTimeStamp && getHourDiff(timeStamp, lastTimeStamp) > 1) {
+            lastTimeStamp = lastTimeStamp.addTime('Hours', -1);
+            hourViews.push([lastTimeStamp, 0]);
+          }
+
+          hourViews.push([timeStamp, hourlyData.views]);
+
+          // Align the hourly data of the latest day to have 24 hours
+          if (hourViews.length === 1) {
+            while (hourViews[hourViews.length - 1][0].getHours() !== 23) {
+              hourViews.push([hourViews[hourViews.length - 1][0].addTime('Hours', 1), 0]);
+              alignHourOffset++;
+            }
+            hourViews.reverse();
+          }
+          if (hourViews.length - alignHourOffset === 24 * 30) {
+            renderViewsMetrics(alignHourOffset);
+          }
+
+          sumByHour[timeStamp.getHours()] += hourlyData.views;
+          sumByDay[timeStamp.getDay()] += hourlyData.views;
+          monthViews[NOW.year - timeStamp.getFullYear()][timeStamp.getMonth()] += hourlyData.views;
+          lastTimeStamp = timeStamp;
+        }
+
+        if (isZeroView) zeroViewCounter++;
+
+        if (!fetchReadyState[monthIdx]) {
+          fetchReadyState[monthIdx] = true;
+          if (monthIdx === 0) renderHandler['day'](0);
+        }
+
+        fetchStoriesStatsByMonth(toTime, monthIdx + 1);
+      })
+      .catch(function(err) {
+        console.error(err);
+      });
+  }
+}
+
+/** Stories Page */
 const stories_format_btn_wrap = document.querySelector('.stories_format_btn_wrap');
 stories_format_btn_wrap.addEventListener('click', function(e) {
   if (e.target.classList.contains('format_btn-select')) return;
@@ -399,27 +456,23 @@ stories_format_btn_wrap.addEventListener('click', function(e) {
       child.classList.add('format_btn-select');
     }
   }
-  changeStoriesFormatState(e.target.dataset.storiesformat);
+  renderStoriesHandler(e.target.dataset.storiesformat);
 });
-
-function changeStoriesFormatState(newStoriesFormat) {
-  renderStoriesHandler(newStoriesFormat);
-}
 
 const renderStoriesHandler = (format) => {
   let stories;
   if (format === 'r/v') {
-    stories = storiesData.map((story) => {
+    stories = storiesData.map(({ title, reads, views }) => {
       return {
-        title: story.title,
-        [format]: story.reads / story.views,
+        title,
+        [format]: reads / views,
       };
     });
   } else if (format === 'c/f') {
-    stories = storiesData.map((story) => {
+    stories = storiesData.map(({ title, claps, upvotes }) => {
       return {
-        title: story.title,
-        [format]: story.claps / story.upvotes,
+        title,
+        [format]: claps / upvotes,
       };
     });
   } else {
@@ -430,9 +483,7 @@ const renderStoriesHandler = (format) => {
       };
     });
   }
-  stories.sort((a, b) => {
-    return a[format] > b[format] ? -1 : a[format] == b[format] ? 0 : 1;
-  });
+  stories.sort((a, b) => (a[format] > b[format] ? -1 : a[format] == b[format] ? 0 : 1));
 
   const labels = stories.slice(0, 5).map(({ title }) => title);
   const data = stories.slice(0, 5).map((story) => story[format]);
@@ -522,83 +573,13 @@ const renderViewsMetrics = () => {
   document.querySelector('.day_views').innerHTML = numFormater(daySum);
   document.querySelector('.week_views').innerHTML = numFormater(weekSum);
   document.querySelector('.month_views').innerHTML = numFormater(monthSum);
-  if (isReadyToRender) {
+  if (isReadyToRenderSummaryPage) {
     document.querySelector('#summary_loader').style.display = 'none';
     document.querySelector('.summary_wrap').style.display = 'flex';
   } else {
-    isReadyToRender = true;
+    isReadyToRenderSummaryPage = true;
   }
 };
-
-function init() {
-  fetchStoriesStatsByMonth(NOW.epoch, 0);
-  let lastTimeStamp;
-  function fetchStoriesStatsByMonth(fromTime, monthIdx) {
-    if (zeroViewCounter > 3 || monthIdx === NUMBER_OF_MONTH_FETCHED - 1) {
-      isFinishFetch = true;
-      handleViewsDownload();
-      return;
-    }
-
-    const year = fromTime.getFullYear();
-    const month = fromTime.getMonth();
-    const date = fromTime.getDate();
-    const toTime = new Date(year, month - 1, date);
-
-    fetch(MEDIUM_HOURLY_STATS_URL(toTime, fromTime))
-      .then(function(response) {
-        return response.text();
-      })
-      .then(function(textRes) {
-        const data = JSON.parse(textRes.split('</x>')[1]);
-        const { value: rawData } = data.payload;
-        let isZeroView = true;
-
-        for (let idx = rawData.length - 1; idx >= 0; idx--) {
-          let hourlyData = rawData[idx];
-          if (hourlyData.views > 0 && isZeroView) isZeroView = false;
-          let timeStamp = new Date(hourlyData.timestampMs);
-
-          // Fill the gap btw two timestamps to ensure data continuity
-          while (lastTimeStamp && getHourDiff(timeStamp, lastTimeStamp) > 1) {
-            lastTimeStamp = lastTimeStamp.addTime('Hours', -1);
-            hourViews.push([lastTimeStamp, 0]);
-          }
-
-          hourViews.push([timeStamp, hourlyData.views]);
-
-          // Align the hourly data of the latest day to have 24 hours
-          if (hourViews.length === 1) {
-            while (hourViews[hourViews.length - 1][0].getHours() !== 23) {
-              hourViews.push([hourViews[hourViews.length - 1][0].addTime('Hours', 1), 0]);
-              alignHourOffset++;
-            }
-            hourViews.reverse();
-          }
-          if (hourViews.length - alignHourOffset === 24 * 30) {
-            renderViewsMetrics(alignHourOffset);
-          }
-
-          sumByHour[timeStamp.getHours()] += hourlyData.views;
-          sumByDay[timeStamp.getDay()] += hourlyData.views;
-          monthViews[NOW.year - timeStamp.getFullYear()][timeStamp.getMonth()] += hourlyData.views;
-          lastTimeStamp = timeStamp;
-        }
-
-        if (isZeroView) zeroViewCounter++;
-
-        if (!fetchReadyState[monthIdx]) {
-          fetchReadyState[monthIdx] = true;
-          if (monthIdx === 0) renderHandler['day'](0);
-        }
-
-        fetchStoriesStatsByMonth(toTime, monthIdx + 1);
-      })
-      .catch(function(err) {
-        console.error(err);
-      });
-  }
-}
 
 const views_download = document.querySelector('.views_download');
 const views_download_loader = document.querySelector('.views_download_loader');
@@ -610,14 +591,14 @@ function handleViewsDownload() {
 }
 
 function exportViewsToCsv() {
-  let content = [['Year', 'Month', 'Day', 'Views']];
+  let csvArray = [['Year', 'Month', 'Day', 'Views']];
   let curDateViews = 0;
   let curDateKey = getDateKeyFromEpoch(new Date(hourViews[0]));
   for (let idx = 0; idx < hourViews.length; idx++) {
     const [timestamp, views] = hourViews[idx];
     const tmpDateKey = getDateKeyFromEpoch(new Date(timestamp));
     if (curDateKey !== tmpDateKey) {
-      content.push([
+      csvArray.push([
         `${curDateKey}`.slice(0, 4),
         `${curDateKey}`.slice(4, 6),
         `${curDateKey}`.slice(6, 8),
@@ -628,36 +609,21 @@ function exportViewsToCsv() {
     }
     curDateViews += views;
   }
-
-  let finalVal = '';
-
-  for (let i = 0; i < content.length; i++) {
-    let value = content[i];
-
-    for (let j = 0; j < value.length; j++) {
-      let innerValue = value[j] === null ? '' : value[j].toString();
-      let result = innerValue.replace(/"/g, '""');
-      if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"';
-      if (j > 0) finalVal += ',';
-      finalVal += result;
-    }
-
-    finalVal += '\n';
-  }
-
+  const csvString = getCsvString(csvArray);
   views_download_wrap.setAttribute(
     'href',
-    'data:text/csv;charset=utf-8,' + encodeURIComponent(finalVal)
+    'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString)
   );
   views_download_wrap.setAttribute(
     'download',
-    `Medium-Stats-Counter-${getDateKeyFromEpoch(NOW.epoch)}.csv`
+    `Medium-Stats-Counter-Views-${getDateKeyFromEpoch(NOW.epoch)}.csv`
   );
 }
 
 const stories_download = document.querySelector('.stories_download');
 const stories_download_loader = document.querySelector('.stories_download_loader');
 const stories_download_wrap = document.querySelector('.stories_download_wrap');
+
 function handleStoriesDownload() {
   exportstoriesToCsv();
   stories_download.style.display = 'block';
@@ -665,9 +631,9 @@ function handleStoriesDownload() {
 }
 
 function exportstoriesToCsv() {
-  let content = [['Title', 'Views', 'Reads', 'R/V', 'Claps', 'Fans', 'C/F', 'Date']];
+  let csvArray = [['Title', 'Views', 'Reads', 'R/V', 'Claps', 'Fans', 'C/F', 'Date']];
   storiesData.forEach(({ title, views, reads, claps, upvotes, createdAt }) => {
-    content.push([
+    csvArray.push([
       title,
       views,
       reads,
@@ -679,30 +645,18 @@ function exportstoriesToCsv() {
     ]);
   });
 
-  let finalVal = '';
-
-  for (let i = 0; i < content.length; i++) {
-    let value = content[i];
-
-    for (let j = 0; j < value.length; j++) {
-      let innerValue = value[j] === null ? '' : value[j].toString();
-      let result = innerValue.replace(/"/g, '""');
-      if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"';
-      if (j > 0) finalVal += ',';
-      finalVal += result;
-    }
-
-    finalVal += '\n';
-  }
+  const csvString = getCsvString(csvArray);
   stories_download_wrap.setAttribute(
     'href',
-    'data:text/csv;charset=utf-8,' + encodeURIComponent(finalVal)
+    'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString)
   );
   stories_download_wrap.setAttribute(
     'download',
-    `Medium-Stats-Counter-${getDateKeyFromEpoch(NOW.epoch)}.csv`
+    `Medium-Stats-Counter-Stories${getDateKeyFromEpoch(NOW.epoch)}.csv`
   );
 }
+
+/** Followers Page */
 
 const followersCtx = document.getElementById('followersChart').getContext('2d');
 let followersChart;
@@ -719,8 +673,7 @@ function createLast30DaysObject() {
   const date = today.getDate();
   for (let i = 0; i <= 30; i++) {
     const day = new Date(year, month - 1, date + i);
-    const key = day.getFullYear() * 10000 + (day.getMonth() + 1) * 100 + day.getDate();
-
+    const key = getDateKeyFromEpoch(day);
     obj[key] = {
       follow: { count: 0, followers: [] },
       highlight: { count: 0, posts: [] },
@@ -732,15 +685,12 @@ function createLast30DaysObject() {
 
 function fetchNextNoti({ to }) {
   const fetchUrl = to === -1 ? MEDIUM_NOTI_STATS_URL : `${MEDIUM_NOTI_STATS_URL}&to=${to}`;
-
   const isRollup = (type) => type.slice(type.length - 6, type.length) === 'rollup';
 
   fetch(fetchUrl)
-    .then(function(response) {
-      return response.text();
-    })
-    .then(function(textRes) {
-      const data = JSON.parse(textRes.split('</x>')[1]);
+    .then((response) => response.text())
+    .then((response) => {
+      const data = parseMediumResponse(response);
       const { value: notiRawData, paging } = data.payload;
 
       notiRawData.forEach((notiItem) => {
@@ -757,15 +707,15 @@ function fetchNextNoti({ to }) {
         renderFollowersChart();
       }
     })
-    .catch(function(err) {
+    .catch((err) => {
       document.querySelector('#followers_loader').style.display = 'none';
       console.error(err);
     });
 }
 
 function countSingleNoti(noti) {
-  let date = new Date(noti.occurredAt);
-  let key = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
+  const date = new Date(noti.occurredAt);
+  const key = getDateKeyFromEpoch(date);
   if (last30DaysStats[key] !== undefined) {
     if (noti.activityType === NOTI_EVENT_TYPE.follow) {
       last30DaysStats[key].follow.count++;
@@ -798,7 +748,6 @@ function renderFollowersChart() {
         },
       ],
     },
-
     options: {
       legend: {
         display: false,
