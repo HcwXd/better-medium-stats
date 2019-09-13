@@ -22,7 +22,7 @@
       <div class="nav_item nav_item-active" data-name="summary">Summary</div>
       <div class="nav_item" data-name="views">Views</div>
       <div class="nav_item" data-name="stories">Stories</div>
-      <!-- <div class="nav_item" data-name="followers">Followers</div> -->
+      <div class="nav_item" data-name="followers">Followers</div>
     </div>
 
     <div id="summary_container" class="container">
@@ -144,6 +144,16 @@
           <line x1="12" y1="15" x2="12" y2="3"></line>
         </svg>
       </a>
+    </div>
+    <div id="followers_container" class="container">
+      <div id="followers_loader" class="loader">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="followers_wrap"></div>
+      <canvas id="followersChart"></canvas>
     </div>
 
     <div class="footer">

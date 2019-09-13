@@ -162,6 +162,9 @@ body {
 .feather-download {
   cursor: pointer; }
 
+#followers_container {
+  display: none; }
+
 .container {
   min-width: 500px;
   padding: 25px;
