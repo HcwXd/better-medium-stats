@@ -76,8 +76,7 @@ function displaySummaryData() {
     }, 0);
   }
   function renderStoryData() {
-    console.log(storiesData);
-
+    handleStoriesDownload();
     renderStoriesHandler('views');
   }
 
@@ -537,6 +536,7 @@ function init() {
   function fetchStoriesStatsByMonth(fromTime, monthIdx) {
     if (zeroViewCounter > 3 || monthIdx === NUMBER_OF_MONTH_FETCHED - 1) {
       isFinishFetch = true;
+      handleViewsDownload();
       return;
     }
 
@@ -600,34 +600,16 @@ function init() {
   }
 }
 
-const download_btn = document.querySelector('.feather-download');
-const download_loader = document.querySelector('.download_loader');
-const download_btn_wrap = document.querySelector('.download_btn_wrap');
-const download_wording = document.querySelector('.download_wording');
-
-download_btn.addEventListener('click', handleDownload);
-
-function handleDownload() {
-  if (!download_btn.classList.contains('feather-download-ready')) {
-    download_btn.style.display = 'none';
-    download_loader.style.display = 'block';
-    download_wording.classList.add('download_wording-show');
-  }
-
-  const pollingFetchState = setInterval(() => {
-    if (isFinishFetch) {
-      exportToCsv();
-      download_btn.style.display = 'block';
-      download_btn.classList.add('feather-download-ready');
-      download_loader.style.display = 'none';
-      download_wording.classList.remove('download_wording-show');
-
-      clearInterval(pollingFetchState);
-    }
-  }, 100);
+const views_download = document.querySelector('.views_download');
+const views_download_loader = document.querySelector('.views_download_loader');
+const views_download_wrap = document.querySelector('.views_download_wrap');
+function handleViewsDownload() {
+  exportViewsToCsv();
+  views_download.style.display = 'block';
+  views_download_loader.style.display = 'none';
 }
 
-function exportToCsv() {
+function exportViewsToCsv() {
   let content = [['Year', 'Month', 'Day', 'Views']];
   let curDateViews = 0;
   let curDateKey = getDateKeyFromEpoch(new Date(hourViews[0]));
@@ -663,11 +645,60 @@ function exportToCsv() {
     finalVal += '\n';
   }
 
-  download_btn_wrap.setAttribute(
+  views_download_wrap.setAttribute(
     'href',
     'data:text/csv;charset=utf-8,' + encodeURIComponent(finalVal)
   );
-  download_btn_wrap.setAttribute(
+  views_download_wrap.setAttribute(
+    'download',
+    `Medium-Stats-Counter-${getDateKeyFromEpoch(NOW.epoch)}.csv`
+  );
+}
+
+const stories_download = document.querySelector('.stories_download');
+const stories_download_loader = document.querySelector('.stories_download_loader');
+const stories_download_wrap = document.querySelector('.stories_download_wrap');
+function handleStoriesDownload() {
+  exportstoriesToCsv();
+  stories_download.style.display = 'block';
+  stories_download_loader.style.display = 'none';
+}
+
+function exportstoriesToCsv() {
+  let content = [['Title', 'Views', 'Reads', 'R/V', 'Claps', 'Fans', 'C/F', 'Date']];
+  storiesData.forEach(({ title, views, reads, claps, upvotes, createdAt }) => {
+    content.push([
+      title,
+      views,
+      reads,
+      views > 0 ? (reads / views).toFixed(2) : 0,
+      claps,
+      upvotes,
+      upvotes > 0 ? (claps / upvotes).toFixed(2) : 0,
+      getDetailedDateLabelFromEpoch(new Date(createdAt)),
+    ]);
+  });
+
+  let finalVal = '';
+
+  for (let i = 0; i < content.length; i++) {
+    let value = content[i];
+
+    for (let j = 0; j < value.length; j++) {
+      let innerValue = value[j] === null ? '' : value[j].toString();
+      let result = innerValue.replace(/"/g, '""');
+      if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"';
+      if (j > 0) finalVal += ',';
+      finalVal += result;
+    }
+
+    finalVal += '\n';
+  }
+  stories_download_wrap.setAttribute(
+    'href',
+    'data:text/csv;charset=utf-8,' + encodeURIComponent(finalVal)
+  );
+  stories_download_wrap.setAttribute(
     'download',
     `Medium-Stats-Counter-${getDateKeyFromEpoch(NOW.epoch)}.csv`
   );

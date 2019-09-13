@@ -122,19 +122,6 @@ body {
       display: flex;
       justify-content: space-around;
       align-items: center; }
-      #views_container .change_time_btn_wrap .download_btn_wrap .download_loader {
-        display: none;
-        transition: all 0.7s ease-in-out;
-        border: 5px solid #ebebeb;
-        border-bottom-color: #26B8BF;
-        width: 20px;
-        height: 20px;
-        border-radius: 100%;
-        animation: spin 1s linear infinite; }
-      #views_container .change_time_btn_wrap .download_btn_wrap .feather-download {
-        cursor: pointer; }
-      #views_container .change_time_btn_wrap .download_btn_wrap .feather-download-ready {
-        stroke: #6eb799; }
     #views_container .change_time_btn_wrap .change_time_btn {
       padding: 10px;
       border: 1px solid rgba(0, 0, 0, 0.3);
@@ -155,20 +142,25 @@ body {
       cursor: default; }
       #views_container .change_time_btn_wrap .change_time_btn-prohibit:hover {
         background-color: white; }
-  #views_container .download_wording {
-    font-size: 10px;
-    line-height: 12px;
-    width: 400px;
-    height: 0px;
-    display: block;
-    opacity: 0;
-    text-align: center;
-    transition-duration: 700ms; }
-  #views_container .download_wording-show {
-    opacity: 1;
-    padding: 12px;
-    margin-top: 10px;
-    height: initial; }
+
+.download_loader {
+  display: none;
+  transition: all 0.7s ease-in-out;
+  border: 5px solid #ebebeb;
+  border-bottom-color: #26B8BF;
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  animation: spin 1s linear infinite; }
+
+.views_download_loader {
+  display: block; }
+
+.views_download {
+  display: none; }
+
+.feather-download {
+  cursor: pointer; }
 
 .container {
   min-width: 500px;

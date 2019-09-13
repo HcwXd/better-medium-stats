@@ -129,19 +129,6 @@ body
       display: flex
       justify-content: space-around
       align-items: center
-      .download_loader
-        display: none
-        transition: all 0.7s ease-in-out
-        border: 5px solid #ebebeb
-        border-bottom-color: #26B8BF
-        width: 20px
-        height: 20px
-        border-radius: 100%
-        animation: spin 1s linear infinite
-      .feather-download
-        cursor: pointer
-      .feather-download-ready
-        stroke: $medium-green
     .change_time_btn
       padding: 10px
       border: 1px solid rgba(#000, 0.3)
@@ -162,20 +149,22 @@ body
       cursor: default
       &:hover
         background-color: white
-  .download_wording
-    font-size: 10px
-    line-height: 12px
-    width: 400px
-    height: 0px
-    display: block
-    opacity: 0
-    text-align: center
-    transition-duration: 700ms
-  .download_wording-show
-    opacity: 1
-    padding: 12px
-    margin-top: 10px
-    height: initial 
+.download_loader
+  display: none
+  transition: all 0.7s ease-in-out
+  border: 5px solid #ebebeb
+  border-bottom-color: #26B8BF
+  width: 20px
+  height: 20px
+  border-radius: 100%
+  animation: spin 1s linear infinite
+.views_download_loader
+  display: block
+.views_download
+  display: none
+.feather-download
+  cursor: pointer
+
 
 .container
   min-width: 500px
