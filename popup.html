@@ -17,10 +17,14 @@
     <div class="title_wrap">
       <div class="title">Medium Stats Counter</div>
     </div>
+
     <div class="nav_bar_wrap">
       <div class="nav_item nav_item-active" data-name="summary">Summary</div>
       <div class="nav_item" data-name="views">Views</div>
+      <div class="nav_item" data-name="stories">Stories</div>
+      <!-- <div class="nav_item" data-name="followers">Followers</div> -->
     </div>
+
     <div id="summary_container" class="container">
       <div id="summary_loader" class="loader">
         <span></span>
@@ -56,15 +60,16 @@
         <div class="summary_table"></div>
       </div>
     </div>
+
     <div id="views_container" class="container">
-      <div class="time_format_btn_wrap">
-        <div data-timeFormat="year" class="time_format_btn">Year</div>
-        <div data-timeFormat="month" class="time_format_btn">Month</div>
-        <div data-timeFormat="week" class="time_format_btn">Week</div>
-        <div data-timeFormat="day" class="time_format_btn time_format_btn-select">
+      <div class="format_btn_wrap time_format_btn_wrap">
+        <div data-timeFormat="year" class="format_btn time_format_btn">Year</div>
+        <div data-timeFormat="month" class="format_btn time_format_btn">Month</div>
+        <div data-timeFormat="week" class="format_btn time_format_btn">Week</div>
+        <div data-timeFormat="day" class="format_btn time_format_btn format_btn-select">
           Day
         </div>
-        <div data-timeFormat="hour" class="time_format_btn hour_format_btn">Hour</div>
+        <div data-timeFormat="hour" class="format_btn time_format_btn">Hour</div>
       </div>
       <div id="views_loader" class="loader">
         <span></span>
@@ -72,7 +77,7 @@
         <span></span>
         <span></span>
       </div>
-      <canvas id="hourStatsChart"></canvas>
+      <canvas id="viewsChart"></canvas>
       <div class="change_time_btn_wrap">
         <div class="change_time_btn backward_time_btn" data-direction="1"><<</div>
         <div class="change_time_btn forward_time_btn change_time_btn-prohibit" data-direction="-1">
@@ -102,6 +107,28 @@
         Fetching data from Medium... Thank you for your patience :) <br />Download button will turn
         green when your csv is ready!
       </div>
+    </div>
+    <div id="stories_container" class="container">
+      <div class="format_btn_wrap stories_format_btn_wrap">
+        <div data-storiesFormat="views" class="format_btn stories_format_btn format_btn-select">
+          Views
+        </div>
+        <div data-storiesFormat="reads" class="format_btn stories_format_btn">
+          Reads
+        </div>
+        <div data-storiesFormat="r/v" class="format_btn stories_format_btn">R/V</div>
+        <div data-storiesFormat="claps" class="format_btn stories_format_btn">Claps</div>
+        <div data-storiesFormat="upvotes" class="format_btn stories_format_btn">Fans</div>
+        <div data-storiesFormat="c/f" class="format_btn stories_format_btn">C/F</div>
+      </div>
+      <div id="stories_loader" class="loader">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="stories_wrap"></div>
+      <canvas id="storiesChart"></canvas>
     </div>
 
     <div class="footer">

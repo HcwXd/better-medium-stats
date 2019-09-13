@@ -26,6 +26,10 @@ const getMonthDiff = (olderTime, newerTime) => {
   );
 };
 
+const trimString = (str, length) => {
+  return str.length > length ? str.substring(0, length) + '...' : str;
+};
+
 const getHourDiff = (olderTime, newerTime) => {
   return Math.abs(newerTime - olderTime) / 36e5;
 };

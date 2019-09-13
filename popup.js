@@ -1,11 +1,12 @@
 'use strict';
 
 let isReadyToRender = false;
+let storiesData;
 
 const nav_items = document.querySelectorAll('.nav_item');
 nav_items.forEach((el) => el.addEventListener('click', handleChangeTab));
 
-function handleChangeTab(e) {
+function handleChangeTab() {
   nav_items.forEach((el) => {
     if (el.dataset.name !== this.dataset.name) {
       el.classList.remove('nav_item-active');
@@ -48,6 +49,7 @@ function displaySummaryData() {
         });
     })
     .then(({ storyRawData, followersRawData }) => {
+      storiesData = storyRawData.slice();
       const storyData = {
         totalViews: getTotal(storyRawData, 'views'),
         totalReads: getTotal(storyRawData, 'reads'),
@@ -58,7 +60,9 @@ function displaySummaryData() {
       const followerCount = (Object.values(followersRawData.references.SocialStats)[0] || {})
         .usersFollowedByCount;
 
-      renderStoryData({ followerCount, ...storyData });
+      renderSummaryData({ followerCount, ...storyData });
+
+      renderStoryData();
     })
     .catch(function(err) {
       console.error(err);
@@ -71,8 +75,13 @@ function displaySummaryData() {
       return sum + el[type];
     }, 0);
   }
+  function renderStoryData() {
+    console.log(storiesData);
 
-  function renderStoryData({
+    renderStoriesHandler('views');
+  }
+
+  function renderSummaryData({
     followerCount,
     totalViews,
     totalReads,
@@ -137,13 +146,13 @@ let alignHourOffset = 0;
 
 const timeFormatBtnWrap = document.querySelector('.time_format_btn_wrap');
 timeFormatBtnWrap.addEventListener('click', function(e) {
-  if (e.target.classList.contains('time_format_btn-select')) return;
+  if (e.target.classList.contains('format_btn-select')) return;
 
   for (let child of this.children) {
     if (child !== e.target) {
-      child.classList.remove('time_format_btn-select');
+      child.classList.remove('format_btn-select');
     } else {
-      child.classList.add('time_format_btn-select');
+      child.classList.add('format_btn-select');
     }
   }
   changeTimeFormatState(e.target.dataset.timeformat);
@@ -308,20 +317,20 @@ const renderHandler = {
     renderBarChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
 };
-const ctx = document.getElementById('hourStatsChart').getContext('2d');
-let chart;
+const viewsCtx = document.getElementById('viewsChart').getContext('2d');
+let viewsChart;
 
 function renderBarChart(labels, data, timeStamp) {
-  document.getElementById('hourStatsChart').style.display = 'block';
+  document.getElementById('viewsChart').style.display = 'block';
   document.querySelector('#views_loader').style.display = 'none';
-  if (chart) {
-    chart.data.datasets[0].data = data;
-    chart.data.labels = labels;
-    chart.options.title.text = timeStamp.getFullYear();
-    chart.update();
+  if (viewsChart) {
+    viewsChart.data.datasets[0].data = data;
+    viewsChart.data.labels = labels;
+    viewsChart.options.title.text = timeStamp.getFullYear();
+    viewsChart.update();
     return;
   }
-  chart = new Chart(ctx, {
+  viewsChart = new Chart(viewsCtx, {
     type: 'bar',
     data: {
       labels: labels,
@@ -373,6 +382,127 @@ function renderBarChart(labels, data, timeStamp) {
               callback: function(value) {
                 return value.toLocaleString();
               },
+            },
+          },
+        ],
+      },
+    },
+  });
+}
+const stories_format_btn_wrap = document.querySelector('.stories_format_btn_wrap');
+stories_format_btn_wrap.addEventListener('click', function(e) {
+  if (e.target.classList.contains('format_btn-select')) return;
+
+  for (let child of this.children) {
+    if (child !== e.target) {
+      child.classList.remove('format_btn-select');
+    } else {
+      child.classList.add('format_btn-select');
+    }
+  }
+  changeStoriesFormatState(e.target.dataset.storiesformat);
+});
+
+function changeStoriesFormatState(newStoriesFormat) {
+  renderStoriesHandler(newStoriesFormat);
+}
+
+const renderStoriesHandler = (format) => {
+  let stories;
+  if (format === 'r/v') {
+    stories = storiesData.map((story) => {
+      return {
+        title: story.title,
+        [format]: story.reads / story.views,
+      };
+    });
+  } else if (format === 'c/f') {
+    stories = storiesData.map((story) => {
+      return {
+        title: story.title,
+        [format]: story.claps / story.upvotes,
+      };
+    });
+  } else {
+    stories = storiesData.map((story) => {
+      return {
+        title: story.title,
+        [format]: story[format],
+      };
+    });
+  }
+  stories.sort((a, b) => {
+    return a[format] > b[format] ? -1 : a[format] == b[format] ? 0 : 1;
+  });
+
+  const labels = stories.slice(0, 5).map(({ title }) => title);
+  const data = stories.slice(0, 5).map((story) => story[format]);
+
+  if (format === 'upvotes') format = 'fans';
+  renderStoriesChart(labels, data, format);
+};
+
+const storiesCtx = document.getElementById('storiesChart').getContext('2d');
+let storiesChart;
+
+function renderStoriesChart(labels, data, format) {
+  document.getElementById('storiesChart').style.display = 'block';
+  document.querySelector('#stories_loader').style.display = 'none';
+  if (storiesChart) {
+    storiesChart.data.datasets[0].data = data;
+    storiesChart.data.datasets[0].label = format;
+    storiesChart.data.labels = labels;
+    storiesChart.options.title.text = '';
+    storiesChart.update();
+    return;
+  }
+  storiesChart = new Chart(storiesCtx, {
+    type: 'horizontalBar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: format,
+          borderColor: '#6eb799',
+          backgroundColor: 'rgba(104, 172, 144, 0.9)',
+          data: data,
+        },
+      ],
+    },
+
+    options: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: true,
+        text: '',
+        position: 'bottom',
+      },
+      tooltips: {
+        displayColors: false,
+        callbacks: {
+          title: (tooltipItem, data) => data.labels[tooltipItem[0].index],
+          label: (tooltipItem, data) =>
+            `${data.datasets[0].label}: ${data.datasets[0].data[
+              tooltipItem.index
+            ].toLocaleString()}`,
+        },
+      },
+
+      scales: {
+        xAxes: [
+          {
+            ticks: {
+              beginAtZero: true,
+              callback: (t) => numFormater(t),
+            },
+          },
+        ],
+        yAxes: [
+          {
+            ticks: {
+              callback: (value) => trimString(value, 12),
             },
           },
         ],

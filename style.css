@@ -80,35 +80,36 @@ body {
     #summary_container table thead tr th:last-child {
       border-top-right-radius: 4px; }
 
+.format_btn_wrap {
+  margin-bottom: 15px;
+  display: flex; }
+  .format_btn_wrap .format_btn {
+    padding: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-right: none;
+    color: rgba(0, 0, 0, 0.7);
+    cursor: pointer; }
+    .format_btn_wrap .format_btn:first-child {
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px; }
+    .format_btn_wrap .format_btn:last-child {
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+      border-right: 1px solid rgba(0, 0, 0, 0.3); }
+    .format_btn_wrap .format_btn:hover {
+      background-color: #f6f6f6; }
+  .format_btn_wrap .format_btn-select {
+    background-color: #6eb799;
+    border-color: #6eb799 !important;
+    color: white;
+    cursor: default; }
+    .format_btn_wrap .format_btn-select:hover {
+      background-color: #6eb799; }
+
 #views_container {
   display: none; }
-  #views_container #hourStatsChart {
+  #views_container #viewsChart {
     display: none; }
-  #views_container .time_format_btn_wrap {
-    margin-bottom: 15px;
-    display: flex; }
-    #views_container .time_format_btn_wrap .time_format_btn {
-      padding: 10px;
-      border: 1px solid rgba(0, 0, 0, 0.3);
-      border-right: none;
-      color: rgba(0, 0, 0, 0.7);
-      cursor: pointer; }
-      #views_container .time_format_btn_wrap .time_format_btn:first-child {
-        border-top-left-radius: 4px;
-        border-bottom-left-radius: 4px; }
-      #views_container .time_format_btn_wrap .time_format_btn:last-child {
-        border-top-right-radius: 4px;
-        border-bottom-right-radius: 4px;
-        border-right: 1px solid rgba(0, 0, 0, 0.3); }
-      #views_container .time_format_btn_wrap .time_format_btn:hover {
-        background-color: #f6f6f6; }
-    #views_container .time_format_btn_wrap .time_format_btn-select {
-      background-color: #6eb799;
-      border-color: #6eb799 !important;
-      color: white;
-      cursor: default; }
-      #views_container .time_format_btn_wrap .time_format_btn-select:hover {
-        background-color: #6eb799; }
   #views_container .change_time_btn_wrap {
     margin-top: 15px;
     display: flex;
@@ -191,6 +192,9 @@ body {
       animation: grow 1s ease-in-out 0.3s infinite; }
     .container .loader span:nth-child(4) {
       animation: grow 1s ease-in-out 0.45s infinite; }
+
+#stories_container {
+  display: none; }
 
 .footer {
   padding: 10px 25px 10px 25px;
