@@ -56,9 +56,9 @@ function displaySummaryPage() {
       renderSummaryData({ followerCount, ...storyTableData });
       renderStoryData();
     })
-    .catch(function(err) {
+    .catch((err) => {
       console.error(err);
-      const errorMsg = `<div class="label">Please log in to your Medium account :)<div>`;
+      const errorMsg = `<div class="label">Something went wrong, please try again later<div>`;
       document.querySelector('#summary_container').innerHTML = errorMsg;
     });
 
@@ -727,8 +727,6 @@ function countSingleNoti(noti) {
       last30DaysStats[key].highlight.count++;
       last30DaysStats[key].highlight.posts.push(noti.postId);
     }
-  } else {
-    console.log(key);
   }
 }
 
