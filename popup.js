@@ -383,6 +383,9 @@ function displayViewsPage() {
     if (zeroViewCounter > 3 || monthIdx === NUMBER_OF_MONTH_FETCHED - 1) {
       isFinishFetch = true;
       handleViewsDownload();
+      if (hourViews.length - alignHourOffset < 24 * 30) {
+        renderViewsMetrics();
+      }
       return;
     }
 
@@ -420,7 +423,7 @@ function displayViewsPage() {
             hourViews.reverse();
           }
           if (hourViews.length - alignHourOffset === 24 * 30) {
-            renderViewsMetrics(alignHourOffset);
+            renderViewsMetrics();
           }
 
           sumByHour[timeStamp.getHours()] += hourlyData.views;
@@ -562,10 +565,15 @@ function renderStoriesChart(labels, data, format) {
 }
 
 const renderViewsMetrics = () => {
-  let daySum;
-  let weekSum;
+  let daySum = 0;
+  let weekSum = 0;
   let monthSum = 0;
   for (let idx = 0; idx < 24 * 30; idx++) {
+    if (alignHourOffset + idx >= hourViews.length) {
+      if (alignHourOffset + idx < 24) daySum = monthSum;
+      if (alignHourOffset + idx < 24 * 7) weekSum = monthSum;
+      break;
+    }
     monthSum += hourViews[alignHourOffset + idx][1];
     if (idx === 24) daySum = monthSum;
     if (idx === 24 * 7) weekSum = monthSum;
