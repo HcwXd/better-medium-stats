@@ -11,6 +11,7 @@ function handleChangeTab() {
     } else {
       el.classList.add('nav_item-active');
       document.querySelector(`#${el.dataset.name}_container`).style.display = 'flex';
+      ga('send', 'event', 'Navbar', 'click', el.dataset.name);
     }
   });
 }
@@ -148,6 +149,7 @@ timeFormatBtnWrap.addEventListener('click', function(e) {
       child.classList.add('format_btn-select');
     }
   }
+  ga('send', 'event', 'ViewBar', 'click', e.target.dataset.timeformat);
   changeTimeFormatState(e.target.dataset.timeformat);
 });
 
@@ -626,6 +628,9 @@ function exportViewsToCsv() {
     'download',
     `Medium-Stats-Counter-Views-${getDateKeyFromEpoch(NOW.epoch)}.csv`
   );
+  views_download_wrap.addEventListener('click', () => {
+    ga('send', 'event', 'Download', 'click', 'views');
+  });
 }
 
 const stories_download = document.querySelector('.stories_download');
@@ -662,6 +667,9 @@ function exportstoriesToCsv() {
     'download',
     `Medium-Stats-Counter-Stories${getDateKeyFromEpoch(NOW.epoch)}.csv`
   );
+  stories_download_wrap.addEventListener('click', () => {
+    ga('send', 'event', 'Download', 'click', 'stories');
+  });
 }
 
 /** Followers Page */

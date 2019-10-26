@@ -10,7 +10,7 @@
     "default_icon": "icon/icon.png",
     "default_popup": "popup.html"
   },
-  "content_security_policy": "script-src 'self' https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js; object-src 'self'",
+  "content_security_policy": "script-src 'self' unsafe-inline https://www.google-analytics.com/analytics.js https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js; object-src 'self'",
   "icons": {
     "16": "icon/icon16.png",
     "48": "icon/icon48.png",
