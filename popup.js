@@ -1,5 +1,6 @@
 'use strict';
 const LOG_SUMMARY_DATA = false;
+let articlesMeta;
 
 /** Nav Bar */
 const nav_items = document.querySelectorAll('.nav_item');
@@ -47,21 +48,17 @@ function displaySummaryPage() {
     .then(({ storyRawData, followersRawData }) => {
       storiesData = storyRawData.slice();
 
-      if (LOG_SUMMARY_DATA) {
-        console.log(
-          storiesData
-            .map(({ postId, slug, title, createdAt }) => {
-              return JSON.stringify({
-                postId,
-                slug,
-                title,
-                createdAt,
-                link: `https://medium.com/@C.W.Hu/${slug}-${postId}`,
-              });
-            })
-            .join(',')
-        );
-      }
+      articlesMeta = storiesData
+        .map(({ postId, slug, title, createdAt }) => {
+          return JSON.stringify({
+            postId,
+            slug,
+            title,
+            createdAt,
+            link: `https://medium.com/@C.W.Hu/${slug}-${postId}`,
+          });
+        })
+        .join(',');
 
       const storyTableData = {
         totalViews: getTotal(storyRawData, 'views'),
