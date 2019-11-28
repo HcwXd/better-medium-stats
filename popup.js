@@ -1,5 +1,4 @@
 'use strict';
-const LOG_SUMMARY_DATA = false;
 let articlesMeta;
 
 /** Nav Bar */
