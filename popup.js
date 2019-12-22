@@ -48,12 +48,12 @@ function displaySummaryPage() {
       storiesData = storyRawData.slice();
 
       articlesMeta = storiesData
-        .map(({ postId, slug, title, createdAt }) => {
+        .map(({ postId, slug, title, firstPublishedAt }) => {
           return JSON.stringify({
             postId,
             slug,
             title,
-            createdAt,
+            firstPublishedAt,
             link: `https://medium.com/@C.W.Hu/${slug}-${postId}`,
           });
         })
