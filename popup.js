@@ -1,6 +1,8 @@
 'use strict';
 let articlesMeta;
 
+document.querySelector('.version').innerHTML = 'v' + chrome.runtime.getManifest().version;
+
 /** Nav Bar */
 const nav_items = document.querySelectorAll('.nav_item');
 nav_items.forEach((el) => el.addEventListener('click', handleChangeTab));
