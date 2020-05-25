@@ -22,7 +22,6 @@ function handleChangeTab() {
 
 function renderUserProfile({ name, username, imageId }, followerCount) {
   const avatarUrl = `${AVATAR_URL}${imageId}`;
-  console.log({ name, username, imageId });
   document.querySelector('.user_profile_wrap').innerHTML = `
         <div class="user_info_wrap">
           <a
@@ -104,8 +103,6 @@ function displaySummaryPage() {
       };
       const followerCount = (Object.values(followersRawData.references.SocialStats)[0] || {})
         .usersFollowedByCount;
-
-      console.log(followersRawData);
 
       renderUserProfile(followersRawData.user, followerCount);
       renderSummaryData({ followerCount, ...storyTableData });
@@ -292,8 +289,8 @@ const renderHandler = {
       labels.push(label);
       data.push(views);
     }
-
-    renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
+    if (hourViews[fromTimeState])
+      renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
   day: (hourIdx) => {
     let labels = [];
@@ -311,8 +308,8 @@ const renderHandler = {
       }
       data[data.length - 1] += views;
     }
-
-    renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
+    if (hourViews[fromTimeState])
+      renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
   week: (hourIdx) => {
     let labels = [];
@@ -336,8 +333,8 @@ const renderHandler = {
       }
       data[data.length - 1] += views;
     }
-
-    renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
+    if (hourViews[fromTimeState])
+      renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
   month: (hourIdx) => {
     let labels = [];
@@ -363,8 +360,8 @@ const renderHandler = {
       data.push(monthViews[NOW.year - curTime.getFullYear()].reduce((acc, cur) => acc + cur));
       curTime = curTime.addTime('FullYear', -1);
     }
-
-    renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
+    if (hourViews[fromTimeState])
+      renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
 };
 const viewsCtx = document.getElementById('viewsChart').getContext('2d');
@@ -455,6 +452,8 @@ function displayViewsPage() {
       .then((response) => response.text())
       .then((response) => {
         const data = parseMediumResponse(response);
+        console.log(data);
+
         const { value: rawData } = data.payload;
         let isZeroView = true;
 
