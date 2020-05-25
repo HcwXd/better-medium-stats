@@ -3,10 +3,10 @@ let articlesMeta;
 
 /** Nav Bar */
 const nav_items = document.querySelectorAll('.nav_item');
-nav_items.forEach(el => el.addEventListener('click', handleChangeTab));
+nav_items.forEach((el) => el.addEventListener('click', handleChangeTab));
 
 function handleChangeTab() {
-  nav_items.forEach(el => {
+  nav_items.forEach((el) => {
     if (el.dataset.name !== this.dataset.name) {
       el.classList.remove('nav_item-active');
       document.querySelector(`#${el.dataset.name}_container`).style.display = 'none';
@@ -25,8 +25,8 @@ displaySummaryPage();
 
 function displaySummaryPage() {
   fetch(MEDIUM_SUMMARY_STATS_URL)
-    .then(response => response.text())
-    .then(response => {
+    .then((response) => response.text())
+    .then((response) => {
       const data = parseMediumResponse(response);
       const storyRawData = data && data.payload && data.payload.value;
       const users =
@@ -34,8 +34,8 @@ function displaySummaryPage() {
       const { username } = Object.values(users)[0] || {};
 
       return fetch(MEDIUM_FOLLOWERS_STATS_URL(username))
-        .then(response => response.text())
-        .then(response => {
+        .then((response) => response.text())
+        .then((response) => {
           const data = parseMediumResponse(response);
           const followersRawData = data.payload;
           return {
@@ -72,7 +72,7 @@ function displaySummaryPage() {
       renderSummaryData({ followerCount, ...storyTableData });
       renderStoryData();
     })
-    .catch(err => {
+    .catch((err) => {
       console.error(err);
       const errorMsg = `<div class="label">Something went wrong, please try again later<div>`;
       document.querySelector('#summary_container').innerHTML = errorMsg;
@@ -154,7 +154,7 @@ let zeroViewCounter = 0;
 let alignHourOffset = 0;
 
 const timeFormatBtnWrap = document.querySelector('.time_format_btn_wrap');
-timeFormatBtnWrap.addEventListener('click', function(e) {
+timeFormatBtnWrap.addEventListener('click', function (e) {
   if (e.target.classList.contains('format_btn-select')) return;
 
   for (let child of this.children) {
@@ -238,7 +238,7 @@ function backwardTimeHandler() {
 
 displayViewsPage();
 const renderHandler = {
-  hour: hourIdx => {
+  hour: (hourIdx) => {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24; idx++) {
@@ -247,15 +247,16 @@ const renderHandler = {
         break;
       }
       let [timeStamp, views] = hourViews[hourIdx + idx];
-      let label = `${23 - idx}:00 - ${23 - idx + 1}:00 (${timeStamp.getMonth() +
-        1}/${timeStamp.getDate()})`;
+      let label = `${23 - idx}:00 - ${23 - idx + 1}:00 (${
+        timeStamp.getMonth() + 1
+      }/${timeStamp.getDate()})`;
       labels.push(label);
       data.push(views);
     }
 
     renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
-  day: hourIdx => {
+  day: (hourIdx) => {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24 * 7; idx++) {
@@ -274,7 +275,7 @@ const renderHandler = {
 
     renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
-  week: hourIdx => {
+  week: (hourIdx) => {
     let labels = [];
     let data = [];
     for (let idx = 0; idx < 24 * 7 * 8; idx++) {
@@ -299,7 +300,7 @@ const renderHandler = {
 
     renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
-  month: hourIdx => {
+  month: (hourIdx) => {
     let labels = [];
     let data = [];
     let curTime = hourViews[hourIdx][0];
@@ -313,7 +314,7 @@ const renderHandler = {
 
     renderViewsChart(labels.reverse(), data.reverse(), hourViews[fromTimeState][0]);
   },
-  year: hourIdx => {
+  year: (hourIdx) => {
     let labels = [];
     let data = [];
     let curTime = hourViews[hourIdx][0];
@@ -376,7 +377,7 @@ function renderViewsChart(labels, data, timeStamp) {
         xAxes: [
           {
             ticks: {
-              callback: t => t.split(' - ')[0],
+              callback: (t) => t.split(' - ')[0],
             },
           },
         ],
@@ -384,7 +385,7 @@ function renderViewsChart(labels, data, timeStamp) {
           {
             ticks: {
               beginAtZero: true,
-              callback: value => value.toLocaleString(),
+              callback: (value) => value.toLocaleString(),
             },
           },
         ],
@@ -412,8 +413,8 @@ function displayViewsPage() {
     const toTime = new Date(year, month - 1, date);
 
     fetch(MEDIUM_HOURLY_STATS_URL(toTime, fromTime))
-      .then(response => response.text())
-      .then(response => {
+      .then((response) => response.text())
+      .then((response) => {
         const data = parseMediumResponse(response);
         const { value: rawData } = data.payload;
         let isZeroView = true;
@@ -458,7 +459,7 @@ function displayViewsPage() {
 
         fetchStoriesStatsByMonth(toTime, monthIdx + 1);
       })
-      .catch(function(err) {
+      .catch(function (err) {
         console.error(err);
       });
   }
@@ -466,7 +467,7 @@ function displayViewsPage() {
 
 /** Stories Page */
 const stories_format_btn_wrap = document.querySelector('.stories_format_btn_wrap');
-stories_format_btn_wrap.addEventListener('click', function(e) {
+stories_format_btn_wrap.addEventListener('click', function (e) {
   if (e.target.classList.contains('format_btn-select')) return;
 
   for (let child of this.children) {
@@ -479,7 +480,7 @@ stories_format_btn_wrap.addEventListener('click', function(e) {
   renderStoriesHandler(e.target.dataset.storiesformat);
 });
 
-const renderStoriesHandler = format => {
+const renderStoriesHandler = (format) => {
   let stories;
   if (format === 'r/v') {
     stories = storiesData.map(({ title, reads, views }) => {
@@ -496,7 +497,7 @@ const renderStoriesHandler = format => {
       };
     });
   } else {
-    stories = storiesData.map(story => {
+    stories = storiesData.map((story) => {
       return {
         title: story.title,
         [format]: story[format],
@@ -506,7 +507,7 @@ const renderStoriesHandler = format => {
   stories.sort((a, b) => (a[format] > b[format] ? -1 : a[format] == b[format] ? 0 : 1));
 
   const labels = stories.slice(0, 5).map(({ title }) => title);
-  const data = stories.slice(0, 5).map(story => story[format]);
+  const data = stories.slice(0, 5).map((story) => story[format]);
 
   if (format === 'upvotes') format = 'fans';
   renderStoriesChart(labels, data, format);
@@ -565,14 +566,14 @@ function renderStoriesChart(labels, data, format) {
           {
             ticks: {
               beginAtZero: true,
-              callback: t => numFormater(t),
+              callback: (t) => numFormater(t),
             },
           },
         ],
         yAxes: [
           {
             ticks: {
-              callback: value => trimString(value, 12),
+              callback: (value) => trimString(value, 12),
             },
           },
         ],
@@ -716,17 +717,17 @@ function createLast30DaysObject() {
 
 function fetchNextNoti({ to }) {
   const fetchUrl = to === -1 ? MEDIUM_NOTI_STATS_URL : `${MEDIUM_NOTI_STATS_URL}&to=${to}`;
-  const isRollup = type => type.slice(type.length - 6, type.length) === 'rollup';
+  const isRollup = (type) => type.slice(type.length - 6, type.length) === 'rollup';
 
   fetch(fetchUrl)
-    .then(response => response.text())
-    .then(response => {
+    .then((response) => response.text())
+    .then((response) => {
       const data = parseMediumResponse(response);
       const { value: notiRawData, paging } = data.payload;
 
-      notiRawData.forEach(notiItem => {
+      notiRawData.forEach((notiItem) => {
         if (isRollup(notiItem.activityType)) {
-          notiItem.rollupItems.forEach(noti => countSingleNoti(noti));
+          notiItem.rollupItems.forEach((noti) => countSingleNoti(noti));
         } else {
           countSingleNoti(notiItem);
         }
@@ -738,7 +739,7 @@ function fetchNextNoti({ to }) {
         renderFollowersChart();
       }
     })
-    .catch(err => {
+    .catch((err) => {
       document.querySelector('#followers_loader').style.display = 'none';
       console.error(err);
     });
@@ -767,13 +768,13 @@ function renderFollowersChart() {
     type: 'line',
     data: {
       labels: Object.keys(last30DaysStats).map(
-        key => `${Math.floor((key % 10000) / 100)}/${key % 100}`
+        (key) => `${Math.floor((key % 10000) / 100)}/${key % 100}`
       ),
       datasets: [
         {
           label: 'Daily followers',
           borderColor: '#6eb799',
-          data: [...Object.keys(last30DaysStats).map(key => last30DaysStats[key].follow.count)],
+          data: [...Object.keys(last30DaysStats).map((key) => last30DaysStats[key].follow.count)],
         },
       ],
     },

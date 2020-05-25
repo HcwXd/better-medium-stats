@@ -53,17 +53,17 @@ const getCsvString = (csvArray) => {
 
 const parseMediumResponse = (response) => JSON.parse(response.split('</x>')[1]);
 
-Date.prototype.addTime = function(timeType, timeOffset) {
+Date.prototype.addTime = function (timeType, timeOffset) {
   let result = new Date(this);
   result[`set${timeType}`](result[`get${timeType}`]() + timeOffset);
   return result;
 };
 
-Date.prototype.daysInThisMonth = function() {
+Date.prototype.daysInThisMonth = function () {
   return new Date(this.getFullYear(), this.getMonth() + 1, 0).getDate();
 };
 
-Date.prototype.getWeek = function() {
+Date.prototype.getWeek = function () {
   var firstDay = new Date(this.getFullYear(), 0, 1);
   return Math.ceil(((this - firstDay) / 86400000 + firstDay.getDay() + 1) / 7) - 1;
 };
