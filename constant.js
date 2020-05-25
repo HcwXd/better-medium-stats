@@ -12,6 +12,7 @@ const MEDIUM_FOLLOWERS_STATS_URL = (username) =>
   `https://medium.com/@${username}/followers?format=json`;
 const MEDIUM_SUMMARY_STATS_URL = `https://medium.com/me/stats?format=json&limit=100000`;
 const MEDIUM_NOTI_STATS_URL = `https://medium.com/_/api/activity?limit=10000`;
+const AVATAR_URL = `https://cdn-images-1.medium.com/fit/c/64/64/`;
 
 const NUMBER_OF_MONTH_FETCHED = 120;
 

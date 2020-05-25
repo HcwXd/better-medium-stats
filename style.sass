@@ -22,6 +22,38 @@ body
   justify-content: space-between
   .title
     font-size: 20px
+  .user_profile_wrap
+    display: flex
+    height: 32px
+    .user_info_wrap
+      text-align: right
+      margin-right: 15px
+      a
+        text-decoration: none
+    .avatar_wrap
+      display: flex
+      justify-content: space-around
+      align-items: center
+      transition-duration: 300ms
+      .avatar
+        height: 32px
+        width: 32px
+        border-radius: 100%
+      .stats_icon
+        border: 2px solid $border-gray
+        border-radius: 100%
+        display: flex
+        justify-content: space-around
+        align-items: center
+        height: 32px
+        width: 32px
+        display: none
+      &:hover
+        .stats_icon
+          display: flex
+        .avatar
+          display: none
+    
 
 .nav_bar_wrap
   display: flex
