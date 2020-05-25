@@ -3,7 +3,7 @@
 
   "name": "Better Medium Stats",
   "description": "View your Medium stats in a better way and export data to csv file.",
-  "version": "1.8.2",
+  "version": "1.9.0",
 
   "browser_action": {
     "default_title": "Better Medium Stats",
