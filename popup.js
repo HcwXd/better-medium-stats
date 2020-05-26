@@ -452,7 +452,6 @@ function displayViewsPage() {
       .then((response) => response.text())
       .then((response) => {
         const data = parseMediumResponse(response);
-        console.log(data);
 
         const { value: rawData } = data.payload;
         let isZeroView = true;
