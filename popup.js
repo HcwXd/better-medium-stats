@@ -1,6 +1,5 @@
 'use strict';
 let articlesMeta;
-
 document.querySelector('.version').innerHTML = 'v' + chrome.runtime.getManifest().version;
 
 /** Nav Bar */
@@ -71,15 +70,14 @@ function displaySummaryPage() {
       return fetch(MEDIUM_FOLLOWERS_STATS_URL(username))
         .then((response) => response.text())
         .then((response) => {
-          const data = parseMediumResponse(response);
-          const followersRawData = data.payload;
+          const followerCount = parseMediumFollowerResponse(response);
           return {
             storyRawData,
-            followersRawData,
+            followerCount,
           };
         });
     })
-    .then(({ storyRawData, followersRawData }) => {
+    .then(({ storyRawData, followerCount }) => {
       storiesData = storyRawData.slice();
 
       articlesMeta = storiesData
@@ -101,10 +99,8 @@ function displaySummaryPage() {
         totalUpvotes: getTotal(storyRawData, 'upvotes'),
         totalStories: storyRawData.length,
       };
-      const followerCount = (Object.values(followersRawData.references.SocialStats)[0] || {})
-        .usersFollowedByCount;
 
-      renderUserProfile(followersRawData.user, followerCount);
+      // renderUserProfile(followersRawData.user, followersRawData);
       renderSummaryData({ followerCount, ...storyTableData });
       renderStoryData();
     })
@@ -133,7 +129,9 @@ function displaySummaryPage() {
     totalStories,
   }) {
     document.querySelector('.total_views').innerHTML = totalViews.toLocaleString();
-    document.querySelector('.total_followers').innerHTML = followerCount.toLocaleString();
+    if (followerCount !== -1)
+      document.querySelector('.total_followers').innerHTML = followerCount.toLocaleString();
+    else document.querySelector('#follower_count').remove();
 
     const html = `<table>
                       <thead>

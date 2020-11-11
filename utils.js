@@ -53,6 +53,23 @@ const getCsvString = (csvArray) => {
 
 const parseMediumResponse = (response) => JSON.parse(response.split('</x>')[1]);
 
+const parseMediumFollowerResponse = (response) => {
+  const firstSplit = response.split(' people follow ');
+  if (!firstSplit || !firstSplit.length || firstSplit.length < 2) return -1;
+
+  const secondSplit = firstSplit[1].split('content="');
+  if (!secondSplit || !secondSplit.length || secondSplit.length < 2) return -1;
+
+  const localeString = secondSplit[1];
+  const parsedLocaleString = localeString.replace(',', '');
+  if (isNaN(parsedLocaleString)) return -1;
+
+  const followerCount = +parsedLocaleString;
+  if (followerCount.toLocaleString() !== localeString) return -1;
+
+  return followerCount;
+};
+
 Date.prototype.addTime = function (timeType, timeOffset) {
   let result = new Date(this);
   result[`set${timeType}`](result[`get${timeType}`]() + timeOffset);
