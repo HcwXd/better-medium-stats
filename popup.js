@@ -31,7 +31,12 @@ function renderUserProfile({ name, username, imageId }, followerCount) {
           >
             <div class="username">${name}</div>
           </a>
-          <div class="followers">${followerCount.toLocaleString()} followers</div>
+          ${
+            followerCount !== -1
+              ? ` <div class="followers">${followerCount.toLocaleString()} followers</div>`
+              : ''
+          }
+         
         </div>
         <div class="avatar_wrap">
           <img
@@ -65,7 +70,8 @@ function displaySummaryPage() {
       const storyRawData = data && data.payload && data.payload.value;
       const users =
         (data && data.payload && data.payload.references && data.payload.references.User) || {};
-      const { username } = Object.values(users)[0] || {};
+      const { username, name, imageId } = Object.values(users)[0] || {};
+      const userMeta = { username, name, imageId };
 
       return fetch(MEDIUM_FOLLOWERS_STATS_URL(username))
         .then((response) => response.text())
@@ -74,10 +80,11 @@ function displaySummaryPage() {
           return {
             storyRawData,
             followerCount,
+            userMeta,
           };
         });
     })
-    .then(({ storyRawData, followerCount }) => {
+    .then(({ storyRawData, followerCount, userMeta }) => {
       storiesData = storyRawData.slice();
 
       articlesMeta = storiesData
@@ -99,8 +106,7 @@ function displaySummaryPage() {
         totalUpvotes: getTotal(storyRawData, 'upvotes'),
         totalStories: storyRawData.length,
       };
-
-      // renderUserProfile(followersRawData.user, followersRawData);
+      renderUserProfile(userMeta, followerCount);
       renderSummaryData({ followerCount, ...storyTableData });
       renderStoryData();
     })
