@@ -20,6 +20,7 @@
     "activeTab",
     "https://ajax.googleapis.com/",
     "declarativeContent",
-    "https://medium.com/"
+    "https://medium.com/",
+    "https://*.medium.com/"
   ]
 }
