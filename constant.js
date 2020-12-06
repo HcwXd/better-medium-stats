@@ -21,3 +21,15 @@ const NOTI_EVENT_TYPE = {
   highlight: 'quote',
   clap: 'post_recommended',
 };
+
+const ERROR_MESSAGE = `<div class="error_message_container">
+                          <span class="error_title">Something went wrong, please try again later.</span>
+                          <br><br>
+                          Medium is changing the method of getting data frequently and Better Medium Stats may not work due to some changes. I'll fix the extension as soon as possible once I find out the changes.
+                          <br><br>
+                          If you keep getting errors and are willing to provide more information to help fix problems, feel free to reach out to me in your most convenient way. My contact information can be found at <a class="link" href="https://chengweihu.com/" rel="noopener noreferrer" target="_blank";">chengweihu.com</a>.
+                          <br><br>
+                          Thanks for your patience :)
+                          <br><br>
+                          <img class="sorry_gif" src="/icon/sorry.gif"/>
+                       </div>`;

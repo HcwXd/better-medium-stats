@@ -129,6 +129,21 @@ body {
   display: flex;
 }
 
+#summary_container .error_message_container {
+  text-align: justify;
+  width: 500px;
+  white-space: normal;
+}
+
+#summary_container .error_message_container .error_title {
+  font-weight: bold;
+}
+
+#summary_container .error_message_container .sorry_gif {
+  width: 150px;
+  height: 150px;
+}
+
 #summary_container .summary_wrap {
   display: none;
   -webkit-box-orient: vertical;

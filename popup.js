@@ -112,8 +112,7 @@ function displaySummaryPage() {
     })
     .catch((err) => {
       console.error(err);
-      const errorMsg = `<div class="label">Something went wrong, please try again later<div>`;
-      document.querySelector('#summary_container').innerHTML = errorMsg;
+      document.querySelector('#summary_container').innerHTML = ERROR_MESSAGE;
     });
 
   function getTotal(arr, type) {
