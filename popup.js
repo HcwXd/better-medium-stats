@@ -61,6 +61,7 @@ function renderUserProfile({ name, username, imageId }, followerCount) {
 let isReadyToRenderSummaryPage = false;
 let storiesData;
 displaySummaryPage();
+let errorLog = { hasSummary: false, hasFollower: false };
 
 function displaySummaryPage() {
   fetch(MEDIUM_SUMMARY_STATS_URL)
@@ -73,32 +74,6 @@ function displaySummaryPage() {
       const { username, name, imageId } = Object.values(users)[0] || {};
       const userMeta = { username, name, imageId };
 
-      return fetch(MEDIUM_FOLLOWERS_STATS_URL(username))
-        .then((response) => response.text())
-        .then((response) => {
-          const followerCount = parseMediumFollowerResponse(response);
-          return {
-            storyRawData,
-            followerCount,
-            userMeta,
-          };
-        });
-    })
-    .then(({ storyRawData, followerCount, userMeta }) => {
-      storiesData = storyRawData.slice();
-
-      articlesMeta = storiesData
-        .map(({ postId, slug, title, firstPublishedAt }) => {
-          return JSON.stringify({
-            postId,
-            slug,
-            title,
-            firstPublishedAt,
-            link: `https://medium.com/@C.W.Hu/${slug}-${postId}`,
-          });
-        })
-        .join(',');
-
       const storyTableData = {
         totalViews: getTotal(storyRawData, 'views'),
         totalReads: getTotal(storyRawData, 'reads'),
@@ -106,12 +81,51 @@ function displaySummaryPage() {
         totalUpvotes: getTotal(storyRawData, 'upvotes'),
         totalStories: storyRawData.length,
       };
+
+      storiesData = storyRawData.slice();
+
+      errorLog.hasSummary = true;
+      errorLog.name = username;
+      errorLog.view = storyTableData.totalViews;
+      errorLog.stories = storyTableData.totalStories;
+      return fetch(MEDIUM_FOLLOWERS_STATS_URL(username))
+        .then((response) => response.text())
+        .then((response) => {
+          const followerCount = parseMediumFollowerResponse(response);
+          errorLog.hasFollower = true;
+          return {
+            storyTableData,
+            followerCount,
+            userMeta,
+          };
+        });
+    })
+    .then(({ storyTableData, followerCount, userMeta }) => {
+      // articlesMeta = storiesData
+      //   .map(({ postId, slug, title, firstPublishedAt }) => {
+      //     return JSON.stringify({
+      //       postId,
+      //       slug,
+      //       title,
+      //       firstPublishedAt,
+      //       link: `https://medium.com/@C.W.Hu/${slug}-${postId}`,
+      //     });
+      //   })
+      //   .join(',');
+
+      ga('send', 'event', 'Login', `${errorLog.name} ${errorLog.stories} ${errorLog.view}`);
       renderUserProfile(userMeta, followerCount);
       renderSummaryData({ followerCount, ...storyTableData });
       renderStoryData();
     })
     .catch((err) => {
       console.error(err);
+      const action = !errorLog.hasSummary
+        ? 'fetch summary'
+        : !errorLog.hasFollower
+        ? 'fetch follower'
+        : 'process data';
+      ga('send', 'event', 'Error', action, `${errorLog.name} ${errorLog.stories} ${errorLog.view}`);
       document.querySelector('#summary_container').innerHTML = ERROR_MESSAGE;
     });
 
