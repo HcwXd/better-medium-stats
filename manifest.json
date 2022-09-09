@@ -16,11 +16,5 @@
     "48": "icon/icon48.png",
     "128": "icon/icon128.png"
   },
-  "permissions": [
-    "activeTab",
-    "https://ajax.googleapis.com/",
-    "declarativeContent",
-    "https://medium.com/",
-    "https://*.medium.com/"
-  ]
+  "permissions": ["https://ajax.googleapis.com/", "https://medium.com/", "https://*.medium.com/"]
 }
