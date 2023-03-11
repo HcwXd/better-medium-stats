@@ -68,9 +68,6 @@ function displaySummaryPage() {
     .then((response) => response.text())
     .then((response) => {
       const data = parseMediumResponse(response);
-      console.log(data);
-      const { value, paging } = data.payload;
-
       const storyRawData = data && data.payload && data.payload.value;
       const users =
         (data && data.payload && data.payload.references && data.payload.references.User) || {};
@@ -91,15 +88,6 @@ function displaySummaryPage() {
       errorLog.name = username;
       errorLog.view = storyTableData.totalViews;
       errorLog.stories = storyTableData.totalStories;
-      if (data.payload && paging && paging.next && paging.next.to && value && value.length) {
-        const nextUrl = `${MEDIUM_SUMMARY_STATS_URL}&to=${paging.next.to}`;
-        return fetch(nextUrl)
-          .then((response) => response.text())
-          .then((response) => {
-            const data = parseMediumResponse(response);
-            const storyRawData = data && data.payload && data.payload.value;
-          });
-      }
       return fetch(MEDIUM_FOLLOWERS_STATS_URL(username))
         .then((response) => response.text())
         .then((response) => {
