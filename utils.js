@@ -54,13 +54,13 @@ const getCsvString = (csvArray) => {
 const parseMediumResponse = (response) => JSON.parse(response.split('</x>')[1]);
 
 const parseMediumFollowerResponse = (response) => {
-  const firstSplit = response.split(' people follow ');
+  const firstSplit = response.split(' Followers</h2>');
   if (!firstSplit || !firstSplit.length || firstSplit.length < 2) return -1;
 
-  const secondSplit = firstSplit[1].split('content="');
+  const secondSplit = firstSplit[0].split('">');
   if (!secondSplit || !secondSplit.length || secondSplit.length < 2) return -1;
 
-  const localeString = secondSplit[1];
+  const localeString = secondSplit[secondSplit.length - 1];
   const parsedLocaleString = localeString.replace(',', '');
   if (isNaN(parsedLocaleString)) return -1;
 
