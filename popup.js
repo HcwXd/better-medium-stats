@@ -60,75 +60,54 @@ function renderUserProfile({ name, username, imageId }, followerCount) {
 /** Summary Page */
 let isReadyToRenderSummaryPage = false;
 let storiesData;
-displaySummaryPage();
 let errorLog = { hasSummary: false, hasFollower: false };
 
-function displaySummaryPage() {
-  fetch(MEDIUM_SUMMARY_STATS_URL)
-    .then((response) => response.text())
-    .then((response) => {
-      const data = parseMediumResponse(response);
-      const storyRawData = data && data.payload && data.payload.value;
-      const users =
-        (data && data.payload && data.payload.references && data.payload.references.User) || {};
-      const { username, name, imageId } = Object.values(users)[0] || {};
-      const userMeta = { username, name, imageId };
+(async () => {
+  const summaryStatsRawResponse = await fetch(MEDIUM_SUMMARY_STATS_URL);
+  const summaryStatsTextResponse = await summaryStatsRawResponse.text();
+  const data = parseMediumResponse(summaryStatsTextResponse);
+  const storyRawData = data && data.payload && data.payload.value;
+  const users =
+    (data && data.payload && data.payload.references && data.payload.references.User) || {};
+  const { username, name, imageId } = Object.values(users)[0] || {};
+  const userMeta = { username, name, imageId };
 
-      const storyTableData = {
-        totalViews: getTotal(storyRawData, 'views'),
-        totalReads: getTotal(storyRawData, 'reads'),
-        totalClaps: getTotal(storyRawData, 'claps'),
-        totalUpvotes: getTotal(storyRawData, 'upvotes'),
-        totalStories: storyRawData.length,
-      };
+  const storyTableData = {
+    totalViews: getTotal(storyRawData, 'views'),
+    totalReads: getTotal(storyRawData, 'reads'),
+    totalClaps: getTotal(storyRawData, 'claps'),
+    totalUpvotes: getTotal(storyRawData, 'upvotes'),
+    totalStories: storyRawData.length,
+  };
 
-      storiesData = storyRawData.slice();
+  storiesData = storyRawData.slice();
 
-      errorLog.hasSummary = true;
-      errorLog.name = username;
-      errorLog.view = storyTableData.totalViews;
-      errorLog.stories = storyTableData.totalStories;
-      return fetch(MEDIUM_FOLLOWERS_STATS_URL(username))
-        .then((response) => response.text())
-        .then((response) => {
-          const followerCount = parseMediumFollowerResponse(response);
-          errorLog.hasFollower = true;
-          return {
-            storyTableData,
-            followerCount,
-            userMeta,
-            username,
-          };
-        });
+  errorLog.hasSummary = true;
+  errorLog.name = username;
+  errorLog.view = storyTableData.totalViews;
+  errorLog.stories = storyTableData.totalStories;
+
+  const followersStatsRawResponse = await fetch(MEDIUM_FOLLOWERS_STATS_URL(username));
+  const followersStatsTextResponse = await followersStatsRawResponse.text();
+  const followerCount = parseMediumFollowerResponse(followersStatsTextResponse);
+  errorLog.hasFollower = true;
+
+  articlesMeta = storiesData
+    .map(({ postId, slug, title, firstPublishedAt }) => {
+      return JSON.stringify({
+        postId,
+        slug,
+        title,
+        firstPublishedAt,
+        link: `https://medium.com/@${username}/${slug}-${postId}`,
+      });
     })
-    .then(({ storyTableData, followerCount, userMeta, username }) => {
-      articlesMeta = storiesData
-        .map(({ postId, slug, title, firstPublishedAt }) => {
-          return JSON.stringify({
-            postId,
-            slug,
-            title,
-            firstPublishedAt,
-            link: `https://medium.com/@${username}/${slug}-${postId}`,
-          });
-        })
-        .join(',');
+    .join(',');
 
-      ga('send', 'event', 'Login', `${errorLog.name} ${errorLog.stories} ${errorLog.view}`);
-      renderUserProfile(userMeta, followerCount);
-      renderSummaryData({ followerCount, ...storyTableData });
-      renderStoryData();
-    })
-    .catch((err) => {
-      console.error(err);
-      const action = !errorLog.hasSummary
-        ? 'fetch summary'
-        : !errorLog.hasFollower
-        ? 'fetch follower'
-        : 'process data';
-      ga('send', 'event', 'Error', action, `${errorLog.name} ${errorLog.stories} ${errorLog.view}`);
-      document.querySelector('#summary_container').innerHTML = ERROR_MESSAGE;
-    });
+  ga('send', 'event', 'Login', `${errorLog.name} ${errorLog.stories} ${errorLog.view}`);
+  renderUserProfile(userMeta, followerCount);
+  renderSummaryData({ followerCount, ...storyTableData });
+  renderStoryData();
 
   function getTotal(arr, type) {
     return arr.reduce((sum, el) => {
@@ -189,7 +168,9 @@ function displaySummaryPage() {
       isReadyToRenderSummaryPage = true;
     }
   }
-}
+})().catch((err) => {
+  console.error(err);
+});
 
 /** Views Page */
 
