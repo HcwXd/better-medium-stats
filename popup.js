@@ -72,6 +72,16 @@ let errorLog = { hasSummary: false, hasFollower: false };
   const { username, name, imageId } = Object.values(users)[0] || {};
   const userMeta = { username, name, imageId };
 
+  const { value, paging } = data.payload;
+  if (data.payload && paging && paging.next && paging.next.to && value && value.length) {
+    const nextUrl = `${MEDIUM_SUMMARY_STATS_URL}&to=${paging.next.to}`;
+    const nextSummaryStatsRawResponse = await fetch(nextUrl);
+    const nextSummaryStatsTextResponse = await nextSummaryStatsRawResponse.text();
+    const nextData = parseMediumResponse(nextSummaryStatsTextResponse);
+    const nextStoryRawData = nextData && nextData.payload && nextData.payload.value;
+    storyRawData.push(...nextStoryRawData);
+  }
+
   const storyTableData = {
     totalViews: getTotal(storyRawData, 'views'),
     totalReads: getTotal(storyRawData, 'reads'),
